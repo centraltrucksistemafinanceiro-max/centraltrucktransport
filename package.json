@@ -1,0 +1,23 @@
+{
+  "name": "sistema-gestao-fretes",
+  "version": "1.0.0",
+  "description": "Uma plataforma web moderna e completa para gestão e controle de operações de transporte rodoviário de carga.",
+  "scripts": {
+    "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser",
+    "dev": "esbuild index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --servedir=. --serve=localhost:5173",
+    "start": "npm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "esbuild": "^0.21.5",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
