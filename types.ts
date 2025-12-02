@@ -52,6 +52,19 @@ export interface Fueling {
   paymentMethod: PaymentMethod;
 }
 
+export enum TrechoStatus {
+  CARREGADO = 'Carregado',
+  VAZIO = 'Vazio',
+}
+
+export interface Trecho {
+  id: string;
+  status: TrechoStatus;
+  kmInicial: number;
+  kmFinal: number;
+  observacoes?: string;
+}
+
 export interface Cargo {
   id: string;
   type: string;
@@ -104,6 +117,7 @@ export interface Trip {
   cargo: Cargo[];
   expenses: Expense[];
   fueling: Fueling[];
+  trechos: Trecho[];
   driverCommissionRate: number; // percentage
   receivedPayments: ReceivedPayment[];
   signature?: {

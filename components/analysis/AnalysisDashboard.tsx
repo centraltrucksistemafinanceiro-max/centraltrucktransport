@@ -5,6 +5,7 @@ import { LineChart } from '../charts/LineChart';
 import { FixedExpense, WorkshopExpense } from '../../types';
 import { Tooltip } from '../ui/Tooltip';
 import { ICONS } from '../../constants';
+import { calculateTrechoMetrics } from '../../utils/tripMetrics';
 
 const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -262,6 +263,70 @@ export const AnalysisDashboard: React.FC = () => {
                                   tooltipText="Resultado líquido da operação: Faturamento Bruto - (Custos de Viagem + Despesas Fixas + Despesas Oficina)."
                                 />
                             </div>
+                            
+                            {/* Consumo por Trecho */}
+                            {filteredData.filteredTrips.some(t => t.trechos && t.trechos.length > 0) && (
+                                <div className="pt-6 border-t border-slate-700">
+                                    <h3 className="text-lg font-semibold text-white mb-4">Análise de Consumo por Trecho</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {(() => {
+                                            let totalKmCarregado = 0;
+                                            let totalKmVazio = 0;
+                                            let totalLitros = 0;
+                                            let totalKm = 0;
+
+                                            filteredData.filteredTrips.forEach(trip => {
+                                                const tripTotalLiters = trip.fueling.reduce((sum, f) => sum + f.liters, 0);
+                                                const tripTotalKm = trip.endKm > trip.startKm ? trip.endKm - trip.startKm : 0;
+                                                const trechos = calculateTrechoMetrics(trip.trechos, tripTotalLiters, tripTotalKm);
+                                                
+                                                totalKmCarregado += trechos.kmCarregado;
+                                                totalKmVazio += trechos.kmVazio;
+                                                totalLiters += tripTotalLiters;
+                                                totalKm += tripTotalKm;
+                                            });
+
+                                            const overallTrechos = calculateTrechoMetrics([], totalLiters, totalKm);
+
+                                            return (
+                                                <>
+                                                    <div className="bg-slate-800 p-4 rounded-lg">
+                                                        <p className="text-xs text-slate-400 mb-2">KM Carregado</p>
+                                                        <p className="text-3xl font-bold text-yellow-400">{totalKmCarregado}</p>
+                                                        <p className="text-xs text-slate-500">km</p>
+                                                    </div>
+                                                    <div className="bg-slate-800 p-4 rounded-lg">
+                                                        <p className="text-xs text-slate-400 mb-2">KM Vazio</p>
+                                                        <p className="text-3xl font-bold text-blue-400">{totalKmVazio}</p>
+                                                        <p className="text-xs text-slate-500">km</p>
+                                                    </div>
+                                                    <div className="bg-slate-800 p-4 rounded-lg border border-green-500/30">
+                                                        <p className="text-xs text-slate-400 mb-2">Total Geral</p>
+                                                        <p className="text-3xl font-bold text-green-400">{totalKm}</p>
+                                                        <p className="text-xs text-slate-500">km</p>
+                                                    </div>
+                                                    <div className="bg-slate-800 p-4 rounded-lg">
+                                                        <p className="text-xs text-slate-400 mb-2">Média Carregado</p>
+                                                        <p className="text-3xl font-bold text-yellow-300">{totalKmCarregado > 0 && totalLiters > 0 ? (totalKmCarregado / (totalLiters * (totalKmCarregado / totalKm))).toFixed(2) : '0.00'}</p>
+                                                        <p className="text-xs text-slate-500">km/l</p>
+                                                    </div>
+                                                    <div className="bg-slate-800 p-4 rounded-lg">
+                                                        <p className="text-xs text-slate-400 mb-2">Média Vazio</p>
+                                                        <p className="text-3xl font-bold text-blue-300">{totalKmVazio > 0 && totalLiters > 0 ? (totalKmVazio / (totalLiters * (totalKmVazio / totalKm))).toFixed(2) : '0.00'}</p>
+                                                        <p className="text-xs text-slate-500">km/l</p>
+                                                    </div>
+                                                    <div className="bg-slate-800 p-4 rounded-lg border border-green-500/30">
+                                                        <p className="text-xs text-slate-400 mb-2">Média Geral</p>
+                                                        <p className="text-3xl font-bold text-green-300">{totalKm > 0 && totalLiters > 0 ? (totalKm / totalLiters).toFixed(2) : '0.00'}</p>
+                                                        <p className="text-xs text-slate-500">km/l</p>
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="pt-6">
                                 <h3 className="text-lg font-semibold text-white mb-4 text-center">Evolução Mensal ({selectedVehicleId ? getVehicle(selectedVehicleId)?.plate : 'Frota'})</h3>
                                 <div style={{ height: '400px' }}>

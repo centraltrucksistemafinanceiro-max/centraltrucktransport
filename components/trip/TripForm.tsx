@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTrips } from '../../context/TripContext';
 import { useSession } from '../../context/SessionContext';
-import { Trip, Cargo, Expense, Fueling, TripStatus, ExpenseCategory, PaymentMethod, ReceivedPayment, ReceivedPaymentType } from '../../types';
+import { Trip, Cargo, Expense, Fueling, TripStatus, ExpenseCategory, PaymentMethod, ReceivedPayment, ReceivedPaymentType, Trecho, TrechoStatus } from '../../types';
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS, RECEIVED_PAYMENT_TYPES } from '../../constants';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
@@ -9,6 +9,7 @@ import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { ICONS } from '../../constants';
 import { AutocompleteInput } from '../ui/AutocompleteInput';
+import { calculateTrechoMetrics } from '../../utils/tripMetrics';
 
 type TripFormProps = {
     setView: (view: any) => void;
@@ -35,6 +36,7 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
         cargo: existingTrip?.cargo || [],
         expenses: existingTrip?.expenses || [],
         fueling: existingTrip?.fueling || [],
+        trechos: existingTrip?.trechos || [],
         driverCommissionRate: existingTrip?.driverCommissionRate || 10,
         receivedPayments: existingTrip?.receivedPayments || [],
     });
@@ -77,6 +79,18 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
     };
     const handleRemoveReceivedPayment = (id: string) => {
         setTrip(prev => ({...prev, receivedPayments: prev.receivedPayments.filter(p => p.id !== id)}));
+    }
+
+    // Trecho Management
+    const [currentTrecho, setCurrentTrecho] = useState<Omit<Trecho, 'id'>>({ status: TrechoStatus.CARREGADO, kmInicial: trip.startKm || 0, kmFinal: 0, observacoes: '' });
+    const handleAddTrecho = () => {
+        if (currentTrecho.kmFinal > currentTrecho.kmInicial) {
+            setTrip(prev => ({ ...prev, trechos: [...prev.trechos, { ...currentTrecho, id: '' + Math.random() }] }));
+            setCurrentTrecho({ status: TrechoStatus.CARREGADO, kmInicial: currentTrecho.kmFinal, kmFinal: 0, observacoes: '' });
+        }
+    };
+    const handleRemoveTrecho = (id: string) => {
+        setTrip(prev => ({...prev, trechos: prev.trechos.filter(t => t.id !== id)}))
     }
 
     // Fueling Management
@@ -131,9 +145,14 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
     const driverCommission = (totalFreight * trip.driverCommissionRate) / 100;
     const totalReceived = trip.receivedPayments.reduce((sum, p) => sum + p.amount, 0);
     const totalFueling = trip.fueling.reduce((sum, f) => sum + f.totalAmount, 0);
+    const totalLiters = trip.fueling.reduce((sum, f) => sum + f.liters, 0);
     const totalOtherExpenses = trip.expenses.reduce((sum, e) => sum + e.amount, 0);
     const totalExpenses = totalFueling + totalOtherExpenses;
     const estimatedNetBalance = totalFreight - driverCommission - totalExpenses;
+    const totalKm = trip.endKm > trip.startKm ? trip.endKm - trip.startKm : 0;
+    
+    // Trecho metrics
+    const trechoMetrics = calculateTrechoMetrics(trip.trechos, totalLiters, totalKm);
 
     const pricePerLiter = currentFueling.liters > 0 && currentFueling.totalAmount > 0 ? currentFueling.totalAmount / currentFueling.liters : 0;
     
@@ -174,6 +193,61 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                        {Object.values(TripStatus).map(s => <option key={s} value={s}>{s}</option>)}
                     </Select>
                     <Input id="driverCommissionRate" name="driverCommissionRate" label="Comissão Motorista (%)" type="number" step="any" value={trip.driverCommissionRate || ''} onChange={e => setTrip(p => ({...p, driverCommissionRate: e.target.valueAsNumber || 0}))} required />
+                </CardContent>
+            </Card>
+
+            {/* Trechos */}
+            <Card>
+                <CardHeader><CardTitle>Registro de Trechos (Carregado/Vazio)</CardTitle></CardHeader>
+                <CardContent>
+                    <div className="space-y-2 mb-4 min-h-[60px]">
+                    {trip.trechos.map((t) => (
+                        <div key={t.id} className="bg-slate-700 p-2 rounded flex items-center justify-between">
+                            <div className="flex-1">
+                                <span className={`font-semibold ${t.status === TrechoStatus.CARREGADO ? 'text-yellow-400' : 'text-blue-400'}`}>
+                                    {t.status}: {t.kmInicial}km → {t.kmFinal}km ({t.kmFinal - t.kmInicial}km)
+                                </span>
+                                {t.observacoes && <p className="text-xs text-slate-400 mt-1">{t.observacoes}</p>}
+                            </div>
+                            <Button type="button" variant="danger" onClick={() => handleRemoveTrecho(t.id)} className="p-1 h-7 w-7"><ICONS.trash className="h-4 w-4"/></Button>
+                        </div>
+                    ))}
+                    </div>
+                    
+                    {trip.trechos.length > 0 && (
+                        <div className="border-t border-slate-700 pt-3 mb-4 text-sm space-y-1">
+                            <div className="flex justify-between">
+                                <span className="text-slate-400">KM Carregado</span>
+                                <span className="font-semibold text-yellow-400">{trechoMetrics.kmCarregado}km</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-slate-400">KM Vazio</span>
+                                <span className="font-semibold text-blue-400">{trechoMetrics.kmVazio}km</span>
+                            </div>
+                            <div className="flex justify-between border-t border-slate-700 pt-2 mt-2">
+                                <span className="text-slate-300">Média Carregado</span>
+                                <span className="font-bold text-yellow-300">{trechoMetrics.mediaCarregado.toFixed(2)} km/l</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-slate-300">Média Vazio</span>
+                                <span className="font-bold text-blue-300">{trechoMetrics.mediaVazio.toFixed(2)} km/l</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-slate-300">Média Geral</span>
+                                <span className="font-bold text-green-300">{trechoMetrics.mediaGeral.toFixed(2)} km/l</span>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-slate-700 pt-4">
+                        <Select id="trechoStatus" label="Tipo" value={currentTrecho.status} onChange={e => setCurrentTrecho(p => ({...p, status: e.target.value as TrechoStatus}))}>
+                            {Object.values(TrechoStatus).map(s => <option key={s} value={s}>{s}</option>)}
+                        </Select>
+                        <Input id="trechoKmInicial" label="KM Inicial" type="number" step="any" value={currentTrecho.kmInicial || ''} onChange={e => setCurrentTrecho(p => ({...p, kmInicial: e.target.valueAsNumber || 0}))}/>
+                        <Input id="trechoKmFinal" label="KM Final" type="number" step="any" value={currentTrecho.kmFinal || ''} onChange={e => setCurrentTrecho(p => ({...p, kmFinal: e.target.valueAsNumber || 0}))}/>
+                        <Input id="trechoObs" label="Observações" type="text" value={currentTrecho.observacoes || ''} onChange={e => setCurrentTrecho(p => ({...p, observacoes: e.target.value}))}/>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={handleAddTrecho} className="mt-2 w-full">Adicionar Trecho</Button>
                 </CardContent>
             </Card>
 

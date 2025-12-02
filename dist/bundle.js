@@ -2433,7 +2433,7 @@ var require_react_dom_development = __commonJS({
         var HostPortal = 4;
         var HostComponent = 5;
         var HostText = 6;
-        var Fragment5 = 7;
+        var Fragment6 = 7;
         var Mode = 8;
         var ContextConsumer = 9;
         var ContextProvider = 10;
@@ -3589,7 +3589,7 @@ var require_react_dom_development = __commonJS({
               return "DehydratedFragment";
             case ForwardRef:
               return getWrappedName$1(type, type.render, "ForwardRef");
-            case Fragment5:
+            case Fragment6:
               return "Fragment";
             case HostComponent:
               return type;
@@ -11972,7 +11972,7 @@ var require_react_dom_development = __commonJS({
             }
           }
           function updateFragment2(returnFiber, current2, fragment, lanes, key) {
-            if (current2 === null || current2.tag !== Fragment5) {
+            if (current2 === null || current2.tag !== Fragment6) {
               var created = createFiberFromFragment(fragment, returnFiber.mode, lanes, key);
               created.return = returnFiber;
               return created;
@@ -12375,7 +12375,7 @@ var require_react_dom_development = __commonJS({
               if (child.key === key) {
                 var elementType = element.type;
                 if (elementType === REACT_FRAGMENT_TYPE) {
-                  if (child.tag === Fragment5) {
+                  if (child.tag === Fragment6) {
                     deleteRemainingChildren(returnFiber, child.sibling);
                     var existing = useFiber(child, element.props.children);
                     existing.return = returnFiber;
@@ -17850,7 +17850,7 @@ var require_react_dom_development = __commonJS({
               var _resolvedProps2 = workInProgress2.elementType === type ? _unresolvedProps2 : resolveDefaultProps(type, _unresolvedProps2);
               return updateForwardRef(current2, workInProgress2, type, _resolvedProps2, renderLanes2);
             }
-            case Fragment5:
+            case Fragment6:
               return updateFragment(current2, workInProgress2, renderLanes2);
             case Mode:
               return updateMode(current2, workInProgress2, renderLanes2);
@@ -18122,7 +18122,7 @@ var require_react_dom_development = __commonJS({
             case SimpleMemoComponent:
             case FunctionComponent:
             case ForwardRef:
-            case Fragment5:
+            case Fragment6:
             case Mode:
             case Profiler:
             case ContextConsumer:
@@ -22373,7 +22373,7 @@ var require_react_dom_development = __commonJS({
           return fiber;
         }
         function createFiberFromFragment(elements, mode, lanes, key) {
-          var fiber = createFiber(Fragment5, elements, key, mode);
+          var fiber = createFiber(Fragment6, elements, key, mode);
           fiber.lanes = lanes;
           return fiber;
         }
@@ -24986,6 +24986,11 @@ var ExpenseCategory = /* @__PURE__ */ ((ExpenseCategory2) => {
   ExpenseCategory2["OTHER"] = "Outros";
   return ExpenseCategory2;
 })(ExpenseCategory || {});
+var TrechoStatus = /* @__PURE__ */ ((TrechoStatus2) => {
+  TrechoStatus2["CARREGADO"] = "Carregado";
+  TrechoStatus2["VAZIO"] = "Vazio";
+  return TrechoStatus2;
+})(TrechoStatus || {});
 var PaymentMethod = /* @__PURE__ */ ((PaymentMethod2) => {
   PaymentMethod2["CASH"] = "Dinheiro";
   PaymentMethod2["PIX"] = "PIX";
@@ -26770,6 +26775,35 @@ var BillingManagement = () => {
 
 // components/trip/TripForm.tsx
 var import_react14 = __toESM(require_react());
+
+// utils/tripMetrics.ts
+var calculateTrechoKm = (trecho) => {
+  return Math.max(0, trecho.kmFinal - trecho.kmInicial);
+};
+var calculateTrechoMetrics = (trechos, totalLiters2, totalKm) => {
+  const carregadoTrechos = trechos.filter((t) => t.status === "Carregado" /* CARREGADO */);
+  const vazioTrechos = trechos.filter((t) => t.status === "Vazio" /* VAZIO */);
+  const kmCarregado = carregadoTrechos.reduce((sum, t) => sum + calculateTrechoKm(t), 0);
+  const kmVazio = vazioTrechos.reduce((sum, t) => sum + calculateTrechoKm(t), 0);
+  const mediaGeral = totalLiters2 > 0 && totalKm > 0 ? (totalKm / totalLiters2).toFixed(2) : "0.00";
+  const proporcaoCarregado = totalKm > 0 ? kmCarregado / totalKm : 0;
+  const proporcaoVazio = totalKm > 0 ? kmVazio / totalKm : 0;
+  const litrosCarregado = totalLiters2 * proporcaoCarregado;
+  const litrosVazio = totalLiters2 * proporcaoVazio;
+  const mediaCarregado = litrosCarregado > 0 && kmCarregado > 0 ? (kmCarregado / litrosCarregado).toFixed(2) : "0.00";
+  const mediaVazio = litrosVazio > 0 && kmVazio > 0 ? (kmVazio / litrosVazio).toFixed(2) : "0.00";
+  return {
+    kmCarregado,
+    kmVazio,
+    litrosCarregado,
+    litrosVazio,
+    mediaCarregado: parseFloat(mediaCarregado),
+    mediaVazio: parseFloat(mediaVazio),
+    mediaGeral: parseFloat(mediaGeral)
+  };
+};
+
+// components/trip/TripForm.tsx
 var import_jsx_runtime20 = __toESM(require_jsx_runtime());
 var today = new Date(Date.now() - (/* @__PURE__ */ new Date()).getTimezoneOffset() * 6e4).toISOString().split("T")[0];
 var TripForm = ({ setView, trip: existingTrip }) => {
@@ -26789,6 +26823,7 @@ var TripForm = ({ setView, trip: existingTrip }) => {
     cargo: existingTrip?.cargo || [],
     expenses: existingTrip?.expenses || [],
     fueling: existingTrip?.fueling || [],
+    trechos: existingTrip?.trechos || [],
     driverCommissionRate: existingTrip?.driverCommissionRate || 10,
     receivedPayments: existingTrip?.receivedPayments || []
   });
@@ -26824,6 +26859,16 @@ var TripForm = ({ setView, trip: existingTrip }) => {
   };
   const handleRemoveReceivedPayment = (id) => {
     setTrip((prev) => ({ ...prev, receivedPayments: prev.receivedPayments.filter((p) => p.id !== id) }));
+  };
+  const [currentTrecho, setCurrentTrecho] = (0, import_react14.useState)({ status: "Carregado" /* CARREGADO */, kmInicial: trip.startKm || 0, kmFinal: 0, observacoes: "" });
+  const handleAddTrecho = () => {
+    if (currentTrecho.kmFinal > currentTrecho.kmInicial) {
+      setTrip((prev) => ({ ...prev, trechos: [...prev.trechos, { ...currentTrecho, id: "" + Math.random() }] }));
+      setCurrentTrecho({ status: "Carregado" /* CARREGADO */, kmInicial: currentTrecho.kmFinal, kmFinal: 0, observacoes: "" });
+    }
+  };
+  const handleRemoveTrecho = (id) => {
+    setTrip((prev) => ({ ...prev, trechos: prev.trechos.filter((t) => t.id !== id) }));
   };
   const [currentFueling, setCurrentFueling] = (0, import_react14.useState)({ station: "", date: today, km: trip.startKm || 0, liters: 0, totalAmount: 0, paymentMethod: "Cart\xE3o" /* CARD */ });
   const handleAddFueling = () => {
@@ -26870,9 +26915,12 @@ var TripForm = ({ setView, trip: existingTrip }) => {
   const driverCommission = totalFreight * trip.driverCommissionRate / 100;
   const totalReceived = trip.receivedPayments.reduce((sum, p) => sum + p.amount, 0);
   const totalFueling = trip.fueling.reduce((sum, f) => sum + f.totalAmount, 0);
+  const totalLiters2 = trip.fueling.reduce((sum, f) => sum + f.liters, 0);
   const totalOtherExpenses = trip.expenses.reduce((sum, e) => sum + e.amount, 0);
   const totalExpenses = totalFueling + totalOtherExpenses;
   const estimatedNetBalance = totalFreight - driverCommission - totalExpenses;
+  const totalKm = trip.endKm > trip.startKm ? trip.endKm - trip.startKm : 0;
+  const trechoMetrics = calculateTrechoMetrics(trip.trechos, totalLiters2, totalKm);
   const pricePerLiter = currentFueling.liters > 0 && currentFueling.totalAmount > 0 ? currentFueling.totalAmount / currentFueling.liters : 0;
   const availableDrivers = drivers.filter((d) => d.status === "active");
   const currentTripDriver = existingTrip ? drivers.find((d) => d.id === existingTrip.driverId) : null;
@@ -26914,6 +26962,71 @@ var TripForm = ({ setView, trip: existingTrip }) => {
         /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Input, { id: "endKm", name: "endKm", label: "KM Final", type: "number", step: "any", value: trip.endKm || "", onChange: (e) => setTrip((p) => ({ ...p, endKm: e.target.valueAsNumber || 0 })) }),
         /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Select, { id: "status", name: "status", label: "Status", value: trip.status, onChange: handleInputChange, children: Object.values(TripStatus).map((s) => /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("option", { value: s, children: s }, s)) }),
         /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Input, { id: "driverCommissionRate", name: "driverCommissionRate", label: "Comiss\xE3o Motorista (%)", type: "number", step: "any", value: trip.driverCommissionRate || "", onChange: (e) => setTrip((p) => ({ ...p, driverCommissionRate: e.target.valueAsNumber || 0 })), required: true })
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)(Card, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(CardTitle, { children: "Registro de Trechos (Carregado/Vazio)" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)(CardContent, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("div", { className: "space-y-2 mb-4 min-h-[60px]", children: trip.trechos.map((t) => /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "bg-slate-700 p-2 rounded flex items-center justify-between", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "flex-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("span", { className: `font-semibold ${t.status === "Carregado" /* CARREGADO */ ? "text-yellow-400" : "text-blue-400"}`, children: [
+              t.status,
+              ": ",
+              t.kmInicial,
+              "km \u2192 ",
+              t.kmFinal,
+              "km (",
+              t.kmFinal - t.kmInicial,
+              "km)"
+            ] }),
+            t.observacoes && /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("p", { className: "text-xs text-slate-400 mt-1", children: t.observacoes })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Button, { type: "button", variant: "danger", onClick: () => handleRemoveTrecho(t.id), className: "p-1 h-7 w-7", children: /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(ICONS.trash, { className: "h-4 w-4" }) })
+        ] }, t.id)) }),
+        trip.trechos.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "border-t border-slate-700 pt-3 mb-4 text-sm space-y-1", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "flex justify-between", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("span", { className: "text-slate-400", children: "KM Carregado" }),
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("span", { className: "font-semibold text-yellow-400", children: [
+              trechoMetrics.kmCarregado,
+              "km"
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "flex justify-between", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("span", { className: "text-slate-400", children: "KM Vazio" }),
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("span", { className: "font-semibold text-blue-400", children: [
+              trechoMetrics.kmVazio,
+              "km"
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "flex justify-between border-t border-slate-700 pt-2 mt-2", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("span", { className: "text-slate-300", children: "M\xE9dia Carregado" }),
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("span", { className: "font-bold text-yellow-300", children: [
+              trechoMetrics.mediaCarregado.toFixed(2),
+              " km/l"
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "flex justify-between", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("span", { className: "text-slate-300", children: "M\xE9dia Vazio" }),
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("span", { className: "font-bold text-blue-300", children: [
+              trechoMetrics.mediaVazio.toFixed(2),
+              " km/l"
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "flex justify-between", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("span", { className: "text-slate-300", children: "M\xE9dia Geral" }),
+            /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("span", { className: "font-bold text-green-300", children: [
+              trechoMetrics.mediaGeral.toFixed(2),
+              " km/l"
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-slate-700 pt-4", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Select, { id: "trechoStatus", label: "Tipo", value: currentTrecho.status, onChange: (e) => setCurrentTrecho((p) => ({ ...p, status: e.target.value })), children: Object.values(TrechoStatus).map((s) => /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("option", { value: s, children: s }, s)) }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Input, { id: "trechoKmInicial", label: "KM Inicial", type: "number", step: "any", value: currentTrecho.kmInicial || "", onChange: (e) => setCurrentTrecho((p) => ({ ...p, kmInicial: e.target.valueAsNumber || 0 })) }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Input, { id: "trechoKmFinal", label: "KM Final", type: "number", step: "any", value: currentTrecho.kmFinal || "", onChange: (e) => setCurrentTrecho((p) => ({ ...p, kmFinal: e.target.valueAsNumber || 0 })) }),
+          /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Input, { id: "trechoObs", label: "Observa\xE7\xF5es", type: "text", value: currentTrecho.observacoes || "", onChange: (e) => setCurrentTrecho((p) => ({ ...p, observacoes: e.target.value })) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime20.jsx)(Button, { type: "button", variant: "secondary", onClick: handleAddTrecho, className: "mt-2 w-full", children: "Adicionar Trecho" })
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
@@ -27088,9 +27201,10 @@ var calculateTotals = (trip) => {
   const totalKm = trip.endKm > 0 ? trip.endKm - trip.startKm : 0;
   const totalReceived = trip.receivedPayments.reduce((sum, p) => sum + p.amount, 0);
   const balanceToReceive = totalFreight - totalReceived;
-  const totalLiters = trip.fueling.reduce((sum, f) => sum + f.liters, 0);
-  const fuelEfficiency = totalLiters > 0 && totalKm > 0 ? (totalKm / totalLiters).toFixed(2) : "N/A";
-  return { totalFreight, totalExpenses, totalOtherExpenses, totalFueling, driverCommission, netBalance, totalKm, totalReceived, balanceToReceive, fuelEfficiency };
+  const totalLiters2 = trip.fueling.reduce((sum, f) => sum + f.liters, 0);
+  const fuelEfficiency = totalLiters2 > 0 && totalKm > 0 ? (totalKm / totalLiters2).toFixed(2) : "N/A";
+  const trechoMetrics = calculateTrechoMetrics(trip.trechos, totalLiters2, totalKm);
+  return { totalFreight, totalExpenses, totalOtherExpenses, totalFueling, driverCommission, netBalance, totalKm, totalReceived, balanceToReceive, fuelEfficiency, trechoMetrics };
 };
 var TripDetails = ({ tripId, setView }) => {
   const { trips, getTrip, getDriver, getVehicle, updateTrip } = useTrips();
@@ -27231,6 +27345,54 @@ var TripDetails = ({ tripId, setView }) => {
               /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("span", { className: `font-bold ${totals.netBalance >= 0 ? "text-green-400" : "text-red-400"}`, children: formatCurrency3(totals.netBalance) })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-right text-xs text-slate-500 -mt-2", children: "(Frete Bruto - Despesas - Comiss\xE3o)" })
+          ] }) }) }),
+          trip.trechos && trip.trechos.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Card, { className: "bg-slate-900 printable-card", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(Section, { title: "An\xE1lise de Consumo por Trecho", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "grid grid-cols-2 gap-4 mb-4", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "bg-slate-800 p-3 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-400 mb-1", children: "KM Carregado" }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-2xl font-bold text-yellow-400", children: totals.trechoMetrics.kmCarregado }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-500", children: "km" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "bg-slate-800 p-3 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-400 mb-1", children: "KM Vazio" }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-2xl font-bold text-blue-400", children: totals.trechoMetrics.kmVazio }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-500", children: "km" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "bg-slate-800 p-3 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-400 mb-1", children: "Litros Carregado" }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-2xl font-bold text-yellow-300", children: totals.trechoMetrics.litrosCarregado.toFixed(2) }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-500", children: "L" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "bg-slate-800 p-3 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-400 mb-1", children: "Litros Vazio" }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-2xl font-bold text-blue-300", children: totals.trechoMetrics.litrosVazio.toFixed(2) }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-xs text-slate-500", children: "L" })
+              ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("hr", { className: "border-slate-700 my-4" }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex justify-between items-center p-2 bg-slate-800/50 rounded", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("span", { className: "text-sm font-medium text-yellow-300", children: "M\xE9dia Carregado" }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("span", { className: "text-lg font-bold text-yellow-300", children: [
+                  totals.trechoMetrics.mediaCarregado.toFixed(2),
+                  " km/l"
+                ] })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex justify-between items-center p-2 bg-slate-800/50 rounded", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("span", { className: "text-sm font-medium text-blue-300", children: "M\xE9dia Vazio" }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("span", { className: "text-lg font-bold text-blue-300", children: [
+                  totals.trechoMetrics.mediaVazio.toFixed(2),
+                  " km/l"
+                ] })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex justify-between items-center p-2 bg-slate-800/50 rounded border border-green-500/30", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("span", { className: "text-sm font-medium text-green-300", children: "M\xE9dia Geral" }),
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("span", { className: "text-lg font-bold text-green-300", children: [
+                  totals.trechoMetrics.mediaGeral.toFixed(2),
+                  " km/l"
+                ] })
+              ] })
+            ] })
           ] }) }) }),
           /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Card, { className: "bg-slate-900 printable-card", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(Section, { title: "Controle de Recebimentos", children: [
             /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("div", { className: "space-y-1 mb-4", children: trip.receivedPayments.length > 0 ? trip.receivedPayments.map((p) => /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md", children: [
@@ -28129,6 +28291,57 @@ var AnalysisDashboard = () => {
               tooltipText: "Resultado l\xEDquido da opera\xE7\xE3o: Faturamento Bruto - (Custos de Viagem + Despesas Fixas + Despesas Oficina)."
             }
           )
+        ] }),
+        filteredData.filteredTrips.some((t) => t.trechos && t.trechos.length > 0) && /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "pt-6 border-t border-slate-700", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("h3", { className: "text-lg font-semibold text-white mb-4", children: "An\xE1lise de Consumo por Trecho" }),
+          /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: (() => {
+            let totalKmCarregado = 0;
+            let totalKmVazio = 0;
+            let totalLitros = 0;
+            let totalKm = 0;
+            filteredData.filteredTrips.forEach((trip) => {
+              const tripTotalLiters = trip.fueling.reduce((sum, f) => sum + f.liters, 0);
+              const tripTotalKm = trip.endKm > trip.startKm ? trip.endKm - trip.startKm : 0;
+              const trechos = calculateTrechoMetrics(trip.trechos, tripTotalLiters, tripTotalKm);
+              totalKmCarregado += trechos.kmCarregado;
+              totalKmVazio += trechos.kmVazio;
+              totalLiters += tripTotalLiters;
+              totalKm += tripTotalKm;
+            });
+            const overallTrechos = calculateTrechoMetrics([], totalLiters, totalKm);
+            return /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)(import_jsx_runtime27.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "bg-slate-800 p-4 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-400 mb-2", children: "KM Carregado" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-3xl font-bold text-yellow-400", children: totalKmCarregado }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-500", children: "km" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "bg-slate-800 p-4 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-400 mb-2", children: "KM Vazio" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-3xl font-bold text-blue-400", children: totalKmVazio }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-500", children: "km" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "bg-slate-800 p-4 rounded-lg border border-green-500/30", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-400 mb-2", children: "Total Geral" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-3xl font-bold text-green-400", children: totalKm }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-500", children: "km" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "bg-slate-800 p-4 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-400 mb-2", children: "M\xE9dia Carregado" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-3xl font-bold text-yellow-300", children: totalKmCarregado > 0 && totalLiters > 0 ? (totalKmCarregado / (totalLiters * (totalKmCarregado / totalKm))).toFixed(2) : "0.00" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-500", children: "km/l" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "bg-slate-800 p-4 rounded-lg", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-400 mb-2", children: "M\xE9dia Vazio" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-3xl font-bold text-blue-300", children: totalKmVazio > 0 && totalLiters > 0 ? (totalKmVazio / (totalLiters * (totalKmVazio / totalKm))).toFixed(2) : "0.00" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-500", children: "km/l" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "bg-slate-800 p-4 rounded-lg border border-green-500/30", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-400 mb-2", children: "M\xE9dia Geral" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-3xl font-bold text-green-300", children: totalKm > 0 && totalLiters > 0 ? (totalKm / totalLiters).toFixed(2) : "0.00" }),
+                /* @__PURE__ */ (0, import_jsx_runtime27.jsx)("p", { className: "text-xs text-slate-500", children: "km/l" })
+              ] })
+            ] });
+          })() })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("div", { className: "pt-6", children: [
           /* @__PURE__ */ (0, import_jsx_runtime27.jsxs)("h3", { className: "text-lg font-semibold text-white mb-4 text-center", children: [

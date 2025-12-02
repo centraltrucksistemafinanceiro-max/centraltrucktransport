@@ -8,6 +8,7 @@ import { Select } from '../ui/Select';
 import { ICONS, EXPENSE_CATEGORIES, RECEIVED_PAYMENT_TYPES, PAYMENT_METHODS } from '../../constants';
 import { AutocompleteInput } from '../ui/AutocompleteInput';
 import { useNotification } from '../../context/NotificationContext';
+import { calculateTrechoMetrics } from '../../utils/tripMetrics';
 
 const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -40,9 +41,9 @@ const calculateTotals = (trip: Trip) => {
     const balanceToReceive = totalFreight - totalReceived;
     const totalLiters = trip.fueling.reduce((sum, f) => sum + f.liters, 0);
     const fuelEfficiency = totalLiters > 0 && totalKm > 0 ? (totalKm / totalLiters).toFixed(2) : 'N/A';
+    const trechoMetrics = calculateTrechoMetrics(trip.trechos, totalLiters, totalKm);
 
-
-    return { totalFreight, totalExpenses, totalOtherExpenses, totalFueling, driverCommission, netBalance, totalKm, totalReceived, balanceToReceive, fuelEfficiency };
+    return { totalFreight, totalExpenses, totalOtherExpenses, totalFueling, driverCommission, netBalance, totalKm, totalReceived, balanceToReceive, fuelEfficiency, trechoMetrics };
 }
 
 export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => void }> = ({ tripId, setView }) => {
@@ -202,6 +203,52 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                                 </Section>
                             </CardContent>
                         </Card>
+
+                        {trip.trechos && trip.trechos.length > 0 && (
+                            <Card className="bg-slate-900 printable-card">
+                                <CardContent>
+                                    <Section title="Análise de Consumo por Trecho">
+                                        <div className="grid grid-cols-2 gap-4 mb-4">
+                                            <div className="bg-slate-800 p-3 rounded-lg">
+                                                <p className="text-xs text-slate-400 mb-1">KM Carregado</p>
+                                                <p className="text-2xl font-bold text-yellow-400">{totals.trechoMetrics.kmCarregado}</p>
+                                                <p className="text-xs text-slate-500">km</p>
+                                            </div>
+                                            <div className="bg-slate-800 p-3 rounded-lg">
+                                                <p className="text-xs text-slate-400 mb-1">KM Vazio</p>
+                                                <p className="text-2xl font-bold text-blue-400">{totals.trechoMetrics.kmVazio}</p>
+                                                <p className="text-xs text-slate-500">km</p>
+                                            </div>
+                                            <div className="bg-slate-800 p-3 rounded-lg">
+                                                <p className="text-xs text-slate-400 mb-1">Litros Carregado</p>
+                                                <p className="text-2xl font-bold text-yellow-300">{totals.trechoMetrics.litrosCarregado.toFixed(2)}</p>
+                                                <p className="text-xs text-slate-500">L</p>
+                                            </div>
+                                            <div className="bg-slate-800 p-3 rounded-lg">
+                                                <p className="text-xs text-slate-400 mb-1">Litros Vazio</p>
+                                                <p className="text-2xl font-bold text-blue-300">{totals.trechoMetrics.litrosVazio.toFixed(2)}</p>
+                                                <p className="text-xs text-slate-500">L</p>
+                                            </div>
+                                        </div>
+                                        <hr className="border-slate-700 my-4" />
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center p-2 bg-slate-800/50 rounded">
+                                                <span className="text-sm font-medium text-yellow-300">Média Carregado</span>
+                                                <span className="text-lg font-bold text-yellow-300">{totals.trechoMetrics.mediaCarregado.toFixed(2)} km/l</span>
+                                            </div>
+                                            <div className="flex justify-between items-center p-2 bg-slate-800/50 rounded">
+                                                <span className="text-sm font-medium text-blue-300">Média Vazio</span>
+                                                <span className="text-lg font-bold text-blue-300">{totals.trechoMetrics.mediaVazio.toFixed(2)} km/l</span>
+                                            </div>
+                                            <div className="flex justify-between items-center p-2 bg-slate-800/50 rounded border border-green-500/30">
+                                                <span className="text-sm font-medium text-green-300">Média Geral</span>
+                                                <span className="text-lg font-bold text-green-300">{totals.trechoMetrics.mediaGeral.toFixed(2)} km/l</span>
+                                            </div>
+                                        </div>
+                                    </Section>
+                                </CardContent>
+                            </Card>
+                        )}
 
                         <Card className="bg-slate-900 printable-card">
                             <CardContent>
