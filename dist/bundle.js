@@ -1083,7 +1083,7 @@ var require_react_development = __commonJS({
           }
           return dispatcher.useContext(Context);
         }
-        function useState18(initialState) {
+        function useState19(initialState) {
           var dispatcher = resolveDispatcher();
           return dispatcher.useState(initialState);
         }
@@ -1886,7 +1886,7 @@ var require_react_development = __commonJS({
         exports.useMemo = useMemo5;
         exports.useReducer = useReducer;
         exports.useRef = useRef2;
-        exports.useState = useState18;
+        exports.useState = useState19;
         exports.useSyncExternalStore = useSyncExternalStore;
         exports.useTransition = useTransition;
         exports.version = ReactVersion;
@@ -2382,9 +2382,9 @@ var require_react_dom_development = __commonJS({
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React21 = require_react();
+        var React22 = require_react();
         var Scheduler = require_scheduler();
-        var ReactSharedInternals = React21.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+        var ReactSharedInternals = React22.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         var suppressWarning = false;
         function setSuppressWarning(newSuppressWarning) {
           {
@@ -3989,7 +3989,7 @@ var require_react_dom_development = __commonJS({
           {
             if (props.value == null) {
               if (typeof props.children === "object" && props.children !== null) {
-                React21.Children.forEach(props.children, function(child) {
+                React22.Children.forEach(props.children, function(child) {
                   if (child == null) {
                     return;
                   }
@@ -23529,7 +23529,7 @@ var require_react_jsx_runtime_development = __commonJS({
     if (true) {
       (function() {
         "use strict";
-        var React21 = require_react();
+        var React22 = require_react();
         var REACT_ELEMENT_TYPE = Symbol.for("react.element");
         var REACT_PORTAL_TYPE = Symbol.for("react.portal");
         var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -23555,7 +23555,7 @@ var require_react_jsx_runtime_development = __commonJS({
           }
           return null;
         }
-        var ReactSharedInternals = React21.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+        var ReactSharedInternals = React22.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function error(format) {
           {
             {
@@ -24428,11 +24428,11 @@ var require_jsx_runtime = __commonJS({
 });
 
 // index.tsx
-var import_react21 = __toESM(require_react());
+var import_react22 = __toESM(require_react());
 var import_client = __toESM(require_client());
 
 // App.tsx
-var import_react20 = __toESM(require_react());
+var import_react21 = __toESM(require_react());
 
 // context/TripContext.tsx
 var import_react = __toESM(require_react());
@@ -25116,6 +25116,16 @@ var ICONS = {
     "svg",
     { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", ...props },
     import_react5.default.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" })
+  ),
+  lock: (props) => import_react5.default.createElement(
+    "svg",
+    { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", ...props },
+    import_react5.default.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" })
+  ),
+  close: (props) => import_react5.default.createElement(
+    "svg",
+    { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", ...props },
+    import_react5.default.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M6 18L18 6M6 6l12 12" })
   )
 };
 
@@ -25325,7 +25335,7 @@ var Header = ({ setView, onMenuClick }) => {
 };
 
 // components/dashboard/Dashboard.tsx
-var import_react7 = __toESM(require_react());
+var import_react8 = __toESM(require_react());
 
 // components/ui/Card.tsx
 var import_jsx_runtime8 = (
@@ -25346,6 +25356,7 @@ var CardContent = ({ children, className = "" }) => {
 };
 
 // components/trip/TripList.tsx
+var import_react7 = __toESM(require_react());
 var import_jsx_runtime9 = __toESM(require_jsx_runtime());
 var getStatusClass = (status) => {
   switch (status) {
@@ -25362,55 +25373,157 @@ var getStatusClass = (status) => {
 var TripList = ({ setView }) => {
   const { trips, getDriver, getVehicle } = useTrips();
   const { currentDriverId } = useSession();
+  const [filterType, setFilterType] = (0, import_react7.useState)("all");
+  const [selectedDate, setSelectedDate] = (0, import_react7.useState)("");
+  const [startMonth, setStartMonth] = (0, import_react7.useState)("");
+  const [endMonth, setEndMonth] = (0, import_react7.useState)("");
   const displayedTrips = currentDriverId ? trips.filter((trip) => trip.driverId === currentDriverId) : trips;
+  const filteredTrips = displayedTrips.filter((trip) => {
+    if (filterType === "date" && selectedDate) {
+      return trip.startDate === selectedDate;
+    }
+    if (filterType === "month" && startMonth && endMonth) {
+      const tripDate = /* @__PURE__ */ new Date(trip.startDate + "T00:00:00");
+      const tripYearMonth = tripDate.getFullYear() + "-" + String(tripDate.getMonth() + 1).padStart(2, "0");
+      return tripYearMonth >= startMonth && tripYearMonth <= endMonth;
+    }
+    return true;
+  });
+  const handleClearFilters = () => {
+    setFilterType("all");
+    setSelectedDate("");
+    setStartMonth("");
+    setEndMonth("");
+  };
   return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(Card, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex justify-between items-center", children: [
       /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(CardTitle, { children: currentDriverId ? "Minhas Viagens" : "Todas as Viagens" }),
       /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Button, { onClick: () => setView({ type: "newTrip" }), children: "Criar Nova Viagem" })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "space-y-4", children: displayedTrips.length > 0 ? displayedTrips.map((trip) => {
-      const driver = getDriver(trip.driverId);
-      const vehicle = getVehicle(trip.vehicleId);
-      return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "bg-slate-700 p-4 rounded-lg flex flex-col md:flex-row justify-between md:items-center gap-4", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("h3", { className: "font-bold text-lg text-white", children: [
-            trip.origin,
-            " \u2192 ",
-            trip.destination
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(CardContent, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "mb-6 p-4 bg-slate-800 rounded-lg border border-slate-700", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "space-y-4", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex flex-wrap gap-3", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+            "button",
+            {
+              onClick: () => setFilterType("all"),
+              className: `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filterType === "all" ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-300 hover:bg-slate-600"}`,
+              children: "Todas as Viagens"
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+            "button",
+            {
+              onClick: () => setFilterType("date"),
+              className: `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filterType === "date" ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-300 hover:bg-slate-600"}`,
+              children: "Filtrar por Data"
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+            "button",
+            {
+              onClick: () => setFilterType("month"),
+              className: `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filterType === "month" ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-300 hover:bg-slate-600"}`,
+              children: "Filtrar por Per\xEDodo"
+            }
+          )
+        ] }),
+        filterType === "date" && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "flex flex-wrap gap-3 items-end", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1 min-w-[200px]", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("label", { className: "block text-sm text-slate-300 mb-2", children: "Data da Viagem" }),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+            "input",
+            {
+              type: "date",
+              value: selectedDate,
+              onChange: (e) => setSelectedDate(e.target.value),
+              className: "w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+            }
+          )
+        ] }) }),
+        filterType === "month" && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex flex-wrap gap-3 items-end", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1 min-w-[200px]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("label", { className: "block text-sm text-slate-300 mb-2", children: "M\xEAs Inicial" }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+              "input",
+              {
+                type: "month",
+                value: startMonth,
+                onChange: (e) => setStartMonth(e.target.value),
+                className: "w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+              }
+            )
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm text-slate-400", children: [
-            driver?.name,
-            " | ",
-            vehicle?.plate,
-            " (",
-            vehicle?.model,
-            ")"
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm text-slate-400", children: [
-            "In\xEDcio: ",
-            (/* @__PURE__ */ new Date(trip.startDate + "T00:00:00")).toLocaleDateString("pt-BR"),
-            trip.monthlyTripNumber && ` | ${trip.monthlyTripNumber}\xAA Viagem do M\xEAs`
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1 min-w-[200px]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("label", { className: "block text-sm text-slate-300 mb-2", children: "M\xEAs Final" }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+              "input",
+              {
+                type: "month",
+                value: endMonth,
+                onChange: (e) => setEndMonth(e.target.value),
+                className: "w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+              }
+            )
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-4", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: `px-3 py-1 text-xs font-semibold rounded-full ${getStatusClass(trip.status)}`, children: trip.status }),
-          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(Button, { variant: "secondary", onClick: () => setView({ type: "editTrip", tripId: trip.id }), children: [
-              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ICONS.pencil, { className: "w-4 h-4 mr-1.5" }),
-              "Editar"
+        filterType !== "all" && (selectedDate || startMonth || endMonth) && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "flex justify-end", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          "button",
+          {
+            onClick: handleClearFilters,
+            className: "px-3 py-1 text-sm text-slate-300 hover:text-red-400 transition-colors",
+            children: "\u2715 Limpar Filtros"
+          }
+        ) })
+      ] }) }),
+      filterType !== "all" && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm text-slate-400 mb-4", children: [
+        "Exibindo ",
+        filteredTrips.length,
+        " viagem(ns) encontrada(s)"
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: "space-y-4", children: filteredTrips.length > 0 ? filteredTrips.map((trip) => {
+        const driver = getDriver(trip.driverId);
+        const vehicle = getVehicle(trip.vehicleId);
+        return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "bg-slate-700 p-4 rounded-lg flex flex-col md:flex-row justify-between md:items-center gap-4", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("h3", { className: "font-bold text-lg text-white", children: [
+              trip.origin,
+              " \u2192 ",
+              trip.destination
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Button, { variant: "secondary", onClick: () => setView({ type: "viewTrip", tripId: trip.id }), children: "Ver Detalhes" })
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm text-slate-400", children: [
+              driver?.name,
+              " | ",
+              vehicle?.plate,
+              " (",
+              vehicle?.model,
+              ")"
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("p", { className: "text-sm text-slate-400", children: [
+              "In\xEDcio: ",
+              (/* @__PURE__ */ new Date(trip.startDate + "T00:00:00")).toLocaleDateString("pt-BR"),
+              trip.monthlyTripNumber && ` | ${trip.monthlyTripNumber}\xAA Viagem do M\xEAs`
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-4", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("span", { className: `px-3 py-1 text-xs font-semibold rounded-full ${getStatusClass(trip.status)}`, children: trip.status }),
+            /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(Button, { variant: "secondary", onClick: () => setView({ type: "editTrip", tripId: trip.id }), children: [
+                /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ICONS.pencil, { className: "w-4 h-4 mr-1.5" }),
+                "Editar"
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Button, { variant: "secondary", onClick: () => setView({ type: "viewTrip", tripId: trip.id }), children: "Ver Detalhes" })
+            ] })
           ] })
-        ] })
-      ] }, trip.id);
-    }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-slate-400 text-center py-8", children: "Nenhuma viagem encontrada." }) }) })
+        ] }, trip.id);
+      }) : /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("p", { className: "text-slate-400 text-center py-8", children: "Nenhuma viagem encontrada." }) })
+    ] })
   ] });
 };
 
 // components/dashboard/Dashboard.tsx
 var import_jsx_runtime10 = __toESM(require_jsx_runtime());
 var StatCard = ({ icon, label, value }) => /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Card, { className: "bg-slate-800", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(CardContent, { className: "flex items-center p-4", children: [
-  /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "p-3 bg-slate-700 rounded-lg mr-4", children: import_react7.default.cloneElement(icon, { className: "w-6 h-6" }) }),
+  /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "p-3 bg-slate-700 rounded-lg mr-4", children: import_react8.default.cloneElement(icon, { className: "w-6 h-6" }) }),
   /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { children: [
     /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "text-sm text-slate-400", children: label }),
     /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "text-2xl font-bold text-white", children: value })
@@ -25498,7 +25611,7 @@ var Dashboard = ({ setView }) => {
 };
 
 // components/management/DriverManagement.tsx
-var import_react8 = __toESM(require_react());
+var import_react9 = __toESM(require_react());
 
 // components/ui/Input.tsx
 var import_jsx_runtime11 = __toESM(require_jsx_runtime());
@@ -25516,16 +25629,32 @@ var Input = ({ label, id, ...props }) => {
   ] });
 };
 
-// components/management/DriverManagement.tsx
+// components/ui/Modal.tsx
 var import_jsx_runtime12 = __toESM(require_jsx_runtime());
+var Modal = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 no-print", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "bg-slate-800 rounded-lg shadow-xl w-full max-w-lg p-6", onClick: (e) => e.stopPropagation(), children: [
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "flex justify-between items-center border-b border-slate-700 pb-3 mb-4", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("h3", { className: "text-xl font-bold text-white", children: title }),
+      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("button", { onClick: onClose, className: "text-slate-400 hover:text-white text-3xl leading-none", children: "\xD7" })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { children })
+  ] }) });
+};
+
+// components/management/DriverManagement.tsx
+var import_jsx_runtime13 = __toESM(require_jsx_runtime());
 var DriverRow = ({ driver }) => {
   const { trips, updateDriver, deleteDriver } = useTrips();
   const { changePassword } = useSession();
   const { showNotification } = useNotification();
-  const [isEditing, setIsEditing] = (0, import_react8.useState)(false);
-  const [driverData, setDriverData] = (0, import_react8.useState)(driver);
-  const [isSaving, setIsSaving] = (0, import_react8.useState)(false);
-  (0, import_react8.useEffect)(() => {
+  const [isEditing, setIsEditing] = (0, import_react9.useState)(false);
+  const [driverData, setDriverData] = (0, import_react9.useState)(driver);
+  const [isSaving, setIsSaving] = (0, import_react9.useState)(false);
+  const [showPasswordModal, setShowPasswordModal] = (0, import_react9.useState)(false);
+  const [newPassword, setNewPassword] = (0, import_react9.useState)("");
+  const [isChangingPassword, setIsChangingPassword] = (0, import_react9.useState)(false);
+  (0, import_react9.useEffect)(() => {
     setDriverData(driver);
   }, [driver]);
   const isDeletable = !trips.some((trip) => trip.driverId === driver.id);
@@ -25543,52 +25672,118 @@ var DriverRow = ({ driver }) => {
       await deleteDriver(driver.id);
     }
   };
-  const handleResetPassword = async () => {
-    const newPassword = prompt(`Digite a nova senha para ${driver.name}.`);
-    if (newPassword && newPassword.trim().length > 0) {
-      const result = await changePassword(driver.id, "driver", newPassword.trim());
-      showNotification(result.message, result.success ? "success" : "error");
+  const handleResetPassword = () => {
+    setNewPassword("");
+    setShowPasswordModal(true);
+  };
+  const handleConfirmPasswordChange = async () => {
+    if (!newPassword || newPassword.trim().length < 6) {
+      showNotification("A senha deve ter pelo menos 6 caracteres.", "error");
+      return;
+    }
+    setIsChangingPassword(true);
+    const result = await changePassword(driver.id, "driver", newPassword.trim());
+    setIsChangingPassword(false);
+    showNotification(result.message, result.success ? "success" : "error");
+    if (result.success) {
+      setShowPasswordModal(false);
+      setNewPassword("");
     }
   };
   if (isEditing) {
-    return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md space-y-3", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Input, { id: `name-${driver.id}`, label: "Nome", value: driverData.name, onChange: (e) => setDriverData((d) => ({ ...d, name: e.target.value.toUpperCase() })) }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Input, { id: `cnh-${driver.id}`, label: "CNH (Opcional)", value: driverData.cnh, onChange: (e) => setDriverData((d) => ({ ...d, cnh: e.target.value.toUpperCase() })) }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Input, { id: `phone-${driver.id}`, label: "Telefone", value: driverData.phone, onChange: (e) => setDriverData((d) => ({ ...d, phone: e.target.value })) }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "flex gap-2 justify-end mt-2", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Button, { variant: "secondary", onClick: handleResetPassword, children: "Resetar Senha" }),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(false), children: "Cancelar" }),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Button, { onClick: handleSave, disabled: isSaving, children: isSaving ? "Salvando..." : "Salvar Altera\xE7\xF5es" })
+    return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md space-y-3", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Input, { id: `name-${driver.id}`, label: "Nome", value: driverData.name, onChange: (e) => setDriverData((d) => ({ ...d, name: e.target.value.toUpperCase() })) }),
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Input, { id: `cnh-${driver.id}`, label: "CNH (Opcional)", value: driverData.cnh, onChange: (e) => setDriverData((d) => ({ ...d, cnh: e.target.value.toUpperCase() })) }),
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Input, { id: `phone-${driver.id}`, label: "Telefone", value: driverData.phone, onChange: (e) => setDriverData((d) => ({ ...d, phone: e.target.value })) }),
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex gap-2 justify-end mt-2", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: "secondary", onClick: handleResetPassword, children: "Resetar Senha" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(false), children: "Cancelar" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { onClick: handleSave, disabled: isSaving, children: isSaving ? "Salvando..." : "Salvar Altera\xE7\xF5es" })
       ] })
     ] });
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: `bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3 transition-opacity ${driver.status === "inactive" ? "opacity-50" : ""}`, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("p", { className: "font-semibold text-white flex items-center gap-2", children: [
-        driver.name,
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("span", { className: `px-2 py-0.5 text-xs font-semibold rounded-full ${driver.status === "active" ? "bg-green-500 text-white" : "bg-slate-500 text-white"}`, children: driver.status === "active" ? "Ativo" : "Inativo" })
+  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(import_jsx_runtime13.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: `bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3 transition-opacity ${driver.status === "inactive" ? "opacity-50" : ""}`, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("p", { className: "font-semibold text-white flex items-center gap-2", children: [
+          driver.name,
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: `px-2 py-0.5 text-xs font-semibold rounded-full ${driver.status === "active" ? "bg-green-500 text-white" : "bg-slate-500 text-white"}`, children: driver.status === "active" ? "Ativo" : "Inativo" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("p", { className: "text-sm text-slate-400", children: [
+          "CNH: ",
+          driver.cnh || "N\xE3o informado",
+          " | Tel: ",
+          driver.phone
+        ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("p", { className: "text-sm text-slate-400", children: [
-        "CNH: ",
-        driver.cnh || "N\xE3o informado",
-        " | Tel: ",
-        driver.phone
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(true), children: "Editar" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(Button, { variant: "secondary", onClick: handleResetPassword, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(ICONS.lock, { className: "w-4 h-4 mr-1" }),
+          "Alterar Senha"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: driver.status === "active" ? "secondary" : "primary", onClick: handleToggleStatus, children: driver.status === "active" ? "Inativar" : "Ativar" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: "danger", onClick: handleDelete, disabled: !isDeletable, title: !isDeletable ? "Motorista n\xE3o pode ser exclu\xEDdo pois est\xE1 associado a viagens." : "Excluir motorista", children: "Excluir" })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(true), children: "Editar" }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Button, { variant: driver.status === "active" ? "secondary" : "primary", onClick: handleToggleStatus, children: driver.status === "active" ? "Inativar" : "Ativar" }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Button, { variant: "danger", onClick: handleDelete, disabled: !isDeletable, title: !isDeletable ? "Motorista n\xE3o pode ser exclu\xEDdo pois est\xE1 associado a viagens." : "Excluir motorista", children: "Excluir" })
-    ] })
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+      Modal,
+      {
+        isOpen: showPasswordModal,
+        onClose: () => {
+          setShowPasswordModal(false);
+          setNewPassword("");
+        },
+        title: `Alterar Senha - ${driver.name}`,
+        children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { className: "text-slate-300 text-sm", children: "Digite a nova senha para o motorista. A senha deve ter pelo menos 6 caracteres." }),
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+            Input,
+            {
+              id: `new-password-${driver.id}`,
+              label: "Nova Senha",
+              type: "password",
+              value: newPassword,
+              onChange: (e) => setNewPassword(e.target.value),
+              minLength: 6,
+              placeholder: "Digite a nova senha",
+              autoFocus: true
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex gap-2 justify-end", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+              Button,
+              {
+                variant: "secondary",
+                onClick: () => {
+                  setShowPasswordModal(false);
+                  setNewPassword("");
+                },
+                disabled: isChangingPassword,
+                children: "Cancelar"
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+              Button,
+              {
+                onClick: handleConfirmPasswordChange,
+                disabled: isChangingPassword || !newPassword || newPassword.length < 6,
+                children: isChangingPassword ? "Alterando..." : "Alterar Senha"
+              }
+            )
+          ] })
+        ] })
+      }
+    )
   ] });
 };
 var DriverManagement = () => {
   const { drivers, addDriver } = useTrips();
-  const [name, setName] = (0, import_react8.useState)("");
-  const [cnh, setCnh] = (0, import_react8.useState)("");
-  const [phone, setPhone] = (0, import_react8.useState)("");
-  const [password, setPassword] = (0, import_react8.useState)("");
-  const [isLoading, setIsLoading] = (0, import_react8.useState)(false);
+  const [name, setName] = (0, import_react9.useState)("");
+  const [cnh, setCnh] = (0, import_react9.useState)("");
+  const [phone, setPhone] = (0, import_react9.useState)("");
+  const [password, setPassword] = (0, import_react9.useState)("");
+  const [isLoading, setIsLoading] = (0, import_react9.useState)(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && phone && password) {
@@ -25601,11 +25796,11 @@ var DriverManagement = () => {
       setIsLoading(false);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "lg:col-span-1", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Card, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(CardTitle, { children: "Adicionar Motorista" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "lg:col-span-1", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(Card, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardTitle, { children: "Adicionar Motorista" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
           Input,
           {
             id: "driverName",
@@ -25615,7 +25810,7 @@ var DriverManagement = () => {
             required: true
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
           Input,
           {
             id: "driverCnh",
@@ -25624,7 +25819,7 @@ var DriverManagement = () => {
             onChange: (e) => setCnh(e.target.value.toUpperCase())
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
           Input,
           {
             id: "driverPhone",
@@ -25635,7 +25830,7 @@ var DriverManagement = () => {
             required: true
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
           Input,
           {
             id: "driverPassword",
@@ -25647,32 +25842,32 @@ var DriverManagement = () => {
             minLength: 6
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Button, { type: "submit", className: "w-full", disabled: isLoading, children: isLoading ? "Adicionando..." : /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(import_jsx_runtime12.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(ICONS.plus, { className: "w-5 h-5 mr-2" }),
+        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { type: "submit", className: "w-full", disabled: isLoading, children: isLoading ? "Adicionando..." : /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(import_jsx_runtime13.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(ICONS.plus, { className: "w-5 h-5 mr-2" }),
           "Adicionar"
         ] }) })
       ] }) })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Card, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(CardTitle, { children: "Motoristas Cadastrados" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "space-y-3", children: drivers.length > 0 ? [...drivers].sort((a, b) => a.name.localeCompare(b.name)).map((driver) => /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(DriverRow, { driver }, driver.id)) : /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("p", { className: "text-slate-400 text-center py-4", children: "Nenhum motorista cadastrado." }) }) })
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(Card, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardTitle, { children: "Motoristas Cadastrados" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "space-y-3", children: drivers.length > 0 ? [...drivers].sort((a, b) => a.name.localeCompare(b.name)).map((driver) => /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(DriverRow, { driver }, driver.id)) : /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { className: "text-slate-400 text-center py-4", children: "Nenhum motorista cadastrado." }) }) })
     ] }) })
   ] });
 };
 
 // components/management/AdminManagement.tsx
-var import_react9 = __toESM(require_react());
-var import_jsx_runtime13 = __toESM(require_jsx_runtime());
+var import_react10 = __toESM(require_react());
+var import_jsx_runtime14 = __toESM(require_jsx_runtime());
 var AdminRow = ({ admin }) => {
   const { admins, updateAdmin, deleteAdmin } = useTrips();
   const { session, changePassword } = useSession();
   const { showNotification } = useNotification();
-  const [isEditing, setIsEditing] = (0, import_react9.useState)(false);
-  const [adminData, setAdminData] = (0, import_react9.useState)(admin);
-  const [isSaving, setIsSaving] = (0, import_react9.useState)(false);
+  const [isEditing, setIsEditing] = (0, import_react10.useState)(false);
+  const [adminData, setAdminData] = (0, import_react10.useState)(admin);
+  const [isSaving, setIsSaving] = (0, import_react10.useState)(false);
   const isSelf = session.user?.userId === admin.id;
   const isLastAdmin = admins.length <= 1;
-  (0, import_react9.useEffect)(() => {
+  (0, import_react10.useEffect)(() => {
     setAdminData(admin);
   }, [admin]);
   const handleSave = async () => {
@@ -25699,23 +25894,23 @@ var AdminRow = ({ admin }) => {
     }
   };
   if (isEditing) {
-    return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md space-y-3", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Input, { id: `name-${admin.id}`, label: "Nome", value: adminData.name, onChange: (e) => setAdminData((d) => ({ ...d, name: e.target.value.toUpperCase() })) }),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex gap-2 justify-end mt-2", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(false), children: "Cancelar" }),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { onClick: handleSave, disabled: isSaving, children: isSaving ? "Salvando..." : "Salvar Altera\xE7\xF5es" })
+    return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md space-y-3", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Input, { id: `name-${admin.id}`, label: "Nome", value: adminData.name, onChange: (e) => setAdminData((d) => ({ ...d, name: e.target.value.toUpperCase() })) }),
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex gap-2 justify-end mt-2", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(false), children: "Cancelar" }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Button, { onClick: handleSave, disabled: isSaving, children: isSaving ? "Salvando..." : "Salvar Altera\xE7\xF5es" })
       ] })
     ] });
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("p", { className: "font-semibold text-white flex items-center gap-2", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("p", { className: "font-semibold text-white flex items-center gap-2", children: [
       admin.name,
-      isSelf && /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("span", { className: "text-xs text-blue-400", children: "(Voc\xEA)" })
+      isSelf && /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("span", { className: "text-xs text-blue-400", children: "(Voc\xEA)" })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(true), children: "Editar" }),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { variant: "secondary", onClick: handleResetPassword, children: "Resetar Senha" }),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(true), children: "Editar" }),
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Button, { variant: "secondary", onClick: handleResetPassword, children: "Resetar Senha" }),
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
         Button,
         {
           variant: "danger",
@@ -25731,9 +25926,9 @@ var AdminRow = ({ admin }) => {
 var AdminManagement = () => {
   const { admins, addAdmin } = useTrips();
   const { showNotification } = useNotification();
-  const [name, setName] = (0, import_react9.useState)("");
-  const [password, setPassword] = (0, import_react9.useState)("");
-  const [isLoading, setIsLoading] = (0, import_react9.useState)(false);
+  const [name, setName] = (0, import_react10.useState)("");
+  const [password, setPassword] = (0, import_react10.useState)("");
+  const [isLoading, setIsLoading] = (0, import_react10.useState)(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && password) {
@@ -25745,11 +25940,11 @@ var AdminManagement = () => {
       setIsLoading(false);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "lg:col-span-1", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(Card, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardTitle, { children: "Adicionar Administrador" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "lg:col-span-1", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(Card, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CardTitle, { children: "Adicionar Administrador" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
           Input,
           {
             id: "adminName",
@@ -25759,7 +25954,7 @@ var AdminManagement = () => {
             required: true
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
           Input,
           {
             id: "adminPassword",
@@ -25770,30 +25965,30 @@ var AdminManagement = () => {
             required: true
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(Button, { type: "submit", className: "w-full", disabled: isLoading, children: isLoading ? "Adicionando..." : /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(import_jsx_runtime13.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(ICONS.plus, { className: "w-5 h-5 mr-2" }),
+        /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Button, { type: "submit", className: "w-full", disabled: isLoading, children: isLoading ? "Adicionando..." : /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(import_jsx_runtime14.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(ICONS.plus, { className: "w-5 h-5 mr-2" }),
           "Adicionar"
         ] }) })
       ] }) })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(Card, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardTitle, { children: "Administradores Cadastrados" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("div", { className: "space-y-3", children: admins.length > 0 ? [...admins].sort((a, b) => a.name.localeCompare(b.name)).map((admin) => /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(AdminRow, { admin }, admin.id)) : /* @__PURE__ */ (0, import_jsx_runtime13.jsx)("p", { className: "text-slate-400 text-center py-4", children: "Nenhum administrador cadastrado." }) }) })
+    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)(Card, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CardTitle, { children: "Administradores Cadastrados" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("div", { className: "space-y-3", children: admins.length > 0 ? [...admins].sort((a, b) => a.name.localeCompare(b.name)).map((admin) => /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(AdminRow, { admin }, admin.id)) : /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("p", { className: "text-slate-400 text-center py-4", children: "Nenhum administrador cadastrado." }) }) })
     ] }) })
   ] });
 };
 
 // components/management/VehicleManagement.tsx
-var import_react10 = __toESM(require_react());
+var import_react11 = __toESM(require_react());
 
 // components/ui/AutocompleteInput.tsx
-var import_jsx_runtime14 = __toESM(require_jsx_runtime());
+var import_jsx_runtime15 = __toESM(require_jsx_runtime());
 var AutocompleteInput = ({ label, id, suggestions, ...props }) => {
   const dataListId = `${id}-suggestions`;
-  return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("label", { htmlFor: id, className: "block text-sm font-medium text-slate-300", children: label }),
-    /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "mt-1", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("label", { htmlFor: id, className: "block text-sm font-medium text-slate-300", children: label }),
+    /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "mt-1", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
         "input",
         {
           id,
@@ -25802,19 +25997,19 @@ var AutocompleteInput = ({ label, id, suggestions, ...props }) => {
           className: "block w-full bg-slate-700 border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("datalist", { id: dataListId, children: suggestions.map((suggestion, index) => /* @__PURE__ */ (0, import_jsx_runtime14.jsx)("option", { value: suggestion }, index)) })
+      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("datalist", { id: dataListId, children: suggestions.map((suggestion, index) => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("option", { value: suggestion }, index)) })
     ] })
   ] });
 };
 
 // components/management/VehicleManagement.tsx
-var import_jsx_runtime15 = __toESM(require_jsx_runtime());
+var import_jsx_runtime16 = __toESM(require_jsx_runtime());
 var VehicleRow = ({ vehicle }) => {
   const { trips, vehicles, updateVehicle, deleteVehicle } = useTrips();
-  const [isEditing, setIsEditing] = (0, import_react10.useState)(false);
-  const [vehicleData, setVehicleData] = (0, import_react10.useState)(vehicle);
+  const [isEditing, setIsEditing] = (0, import_react11.useState)(false);
+  const [vehicleData, setVehicleData] = (0, import_react11.useState)(vehicle);
   const modelSuggestions = [...new Set(vehicles.map((v) => v.model))];
-  (0, import_react10.useEffect)(() => {
+  (0, import_react11.useEffect)(() => {
     setVehicleData(vehicle);
   }, [vehicle]);
   const isDeletable = !trips.some((trip) => trip.vehicleId === vehicle.id);
@@ -25831,9 +26026,9 @@ var VehicleRow = ({ vehicle }) => {
     }
   };
   if (isEditing) {
-    return /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md space-y-3", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Input, { id: `plate-${vehicle.id}`, label: "Placa", value: vehicleData.plate, onChange: (e) => setVehicleData((v) => ({ ...v, plate: e.target.value.toUpperCase() })) }),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+    return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "bg-slate-700 p-4 rounded-md space-y-3", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Input, { id: `plate-${vehicle.id}`, label: "Placa", value: vehicleData.plate, onChange: (e) => setVehicleData((v) => ({ ...v, plate: e.target.value.toUpperCase() })) }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
         AutocompleteInput,
         {
           id: `model-${vehicle.id}`,
@@ -25843,37 +26038,37 @@ var VehicleRow = ({ vehicle }) => {
           suggestions: modelSuggestions
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Input, { id: `chassi-${vehicle.id}`, label: "Chassi", value: vehicleData.chassi, onChange: (e) => setVehicleData((v) => ({ ...v, chassi: e.target.value.toUpperCase() })) }),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "flex gap-2 justify-end mt-2", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(false), children: "Cancelar" }),
-        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Button, { onClick: handleSave, children: "Salvar Altera\xE7\xF5es" })
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Input, { id: `chassi-${vehicle.id}`, label: "Chassi", value: vehicleData.chassi, onChange: (e) => setVehicleData((v) => ({ ...v, chassi: e.target.value.toUpperCase() })) }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "flex gap-2 justify-end mt-2", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(false), children: "Cancelar" }),
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Button, { onClick: handleSave, children: "Salvar Altera\xE7\xF5es" })
       ] })
     ] });
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: `bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3 transition-opacity ${vehicle.status === "inactive" ? "opacity-50" : ""}`, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("p", { className: "font-semibold text-white flex items-center gap-2", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: `bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3 transition-opacity ${vehicle.status === "inactive" ? "opacity-50" : ""}`, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("p", { className: "font-semibold text-white flex items-center gap-2", children: [
         vehicle.plate,
-        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("span", { className: `px-2 py-0.5 text-xs font-semibold rounded-full ${vehicle.status === "active" ? "bg-green-500 text-white" : "bg-slate-500 text-white"}`, children: vehicle.status === "active" ? "Ativo" : "Inativo" })
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("span", { className: `px-2 py-0.5 text-xs font-semibold rounded-full ${vehicle.status === "active" ? "bg-green-500 text-white" : "bg-slate-500 text-white"}`, children: vehicle.status === "active" ? "Ativo" : "Inativo" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("p", { className: "text-sm text-slate-400", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("p", { className: "text-sm text-slate-400", children: [
         vehicle.model,
         " | Chassi: ",
         vehicle.chassi
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(true), children: "Editar" }),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Button, { variant: vehicle.status === "active" ? "secondary" : "primary", onClick: handleToggleStatus, children: vehicle.status === "active" ? "Inativar" : "Ativar" }),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(Button, { variant: "danger", onClick: handleDelete, disabled: !isDeletable, title: !isDeletable ? "Ve\xEDculo n\xE3o pode ser exclu\xEDdo pois est\xE1 associado a viagens." : "Excluir ve\xEDculo", children: "Excluir" })
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Button, { variant: "secondary", onClick: () => setIsEditing(true), children: "Editar" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Button, { variant: vehicle.status === "active" ? "secondary" : "primary", onClick: handleToggleStatus, children: vehicle.status === "active" ? "Inativar" : "Ativar" }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(Button, { variant: "danger", onClick: handleDelete, disabled: !isDeletable, title: !isDeletable ? "Ve\xEDculo n\xE3o pode ser exclu\xEDdo pois est\xE1 associado a viagens." : "Excluir ve\xEDculo", children: "Excluir" })
     ] })
   ] });
 };
 var VehicleManagement = () => {
   const { vehicles, addVehicle } = useTrips();
-  const [plate, setPlate] = (0, import_react10.useState)("");
-  const [model, setModel] = (0, import_react10.useState)("");
-  const [chassi, setChassi] = (0, import_react10.useState)("");
+  const [plate, setPlate] = (0, import_react11.useState)("");
+  const [model, setModel] = (0, import_react11.useState)("");
+  const [chassi, setChassi] = (0, import_react11.useState)("");
   const modelSuggestions = [...new Set(vehicles.map((v) => v.model))];
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25884,11 +26079,11 @@ var VehicleManagement = () => {
       setChassi("");
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "lg:col-span-1", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)(Card, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(CardTitle, { children: "Adicionar Ve\xEDculo" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "lg:col-span-1", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(Card, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(CardTitle, { children: "Adicionar Ve\xEDculo" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
           Input,
           {
             id: "vehiclePlate",
@@ -25898,7 +26093,7 @@ var VehicleManagement = () => {
             required: true
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
           AutocompleteInput,
           {
             id: "vehicleModel",
@@ -25909,7 +26104,7 @@ var VehicleManagement = () => {
             required: true
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
           Input,
           {
             id: "vehicleChassi",
@@ -25919,28 +26114,28 @@ var VehicleManagement = () => {
             required: true
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)(Button, { type: "submit", className: "w-full", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(ICONS.plus, { className: "w-5 h-5 mr-2" }),
+        /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(Button, { type: "submit", className: "w-full", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(ICONS.plus, { className: "w-5 h-5 mr-2" }),
           "Adicionar"
         ] })
       ] }) })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime15.jsxs)(Card, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(CardTitle, { children: "Ve\xEDculos Cadastrados" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: "space-y-3", children: vehicles.length > 0 ? [...vehicles].sort((a, b) => a.plate.localeCompare(b.plate)).map((vehicle) => /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(VehicleRow, { vehicle }, vehicle.id)) : /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("p", { className: "text-slate-400 text-center py-4", children: "Nenhum ve\xEDculo cadastrado." }) }) })
+    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "lg:col-span-2", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(Card, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(CardTitle, { children: "Ve\xEDculos Cadastrados" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "space-y-3", children: vehicles.length > 0 ? [...vehicles].sort((a, b) => a.plate.localeCompare(b.plate)).map((vehicle) => /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(VehicleRow, { vehicle }, vehicle.id)) : /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("p", { className: "text-slate-400 text-center py-4", children: "Nenhum ve\xEDculo cadastrado." }) }) })
     ] }) })
   ] });
 };
 
 // components/management/AccountsPayable.tsx
-var import_react11 = __toESM(require_react());
+var import_react12 = __toESM(require_react());
 
 // components/ui/Select.tsx
-var import_jsx_runtime16 = __toESM(require_jsx_runtime());
+var import_jsx_runtime17 = __toESM(require_jsx_runtime());
 var Select = ({ label, id, children, ...props }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("label", { htmlFor: id, className: "block text-sm font-medium text-slate-300", children: label }),
-    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("label", { htmlFor: id, className: "block text-sm font-medium text-slate-300", children: label }),
+    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "mt-1", children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(
       "select",
       {
         id,
@@ -25950,19 +26145,6 @@ var Select = ({ label, id, children, ...props }) => {
       }
     ) })
   ] });
-};
-
-// components/ui/Modal.tsx
-var import_jsx_runtime17 = __toESM(require_jsx_runtime());
-var Modal = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { className: "fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 no-print", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "bg-slate-800 rounded-lg shadow-xl w-full max-w-lg p-6", onClick: (e) => e.stopPropagation(), children: [
-    /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { className: "flex justify-between items-center border-b border-slate-700 pb-3 mb-4", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("h3", { className: "text-xl font-bold text-white", children: title }),
-      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("button", { onClick: onClose, className: "text-slate-400 hover:text-white text-3xl leading-none", children: "\xD7" })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { children })
-  ] }) });
 };
 
 // components/management/AccountsPayable.tsx
@@ -25994,18 +26176,18 @@ var AccountsPayable = () => {
     updateWorkshopExpense
   } = useTrips();
   const { showNotification } = useNotification();
-  const [searchTerm, setSearchTerm] = (0, import_react11.useState)("");
-  const [plateFilter, setPlateFilter] = (0, import_react11.useState)("");
-  const [startDate, setStartDate] = (0, import_react11.useState)("");
-  const [endDate, setEndDate] = (0, import_react11.useState)("");
-  const [categoryFilter, setCategoryFilter] = (0, import_react11.useState)("");
-  const [isAddModalOpen, setIsAddModalOpen] = (0, import_react11.useState)(false);
-  const [isEditModalOpen, setIsEditModalOpen] = (0, import_react11.useState)(false);
-  const [newExpenseData, setNewExpenseData] = (0, import_react11.useState)(initialFormState);
-  const [editingItem, setEditingItem] = (0, import_react11.useState)(null);
-  const [editFormData, setEditFormData] = (0, import_react11.useState)(null);
-  const [isSaving, setIsSaving] = (0, import_react11.useState)(false);
-  (0, import_react11.useEffect)(() => {
+  const [searchTerm, setSearchTerm] = (0, import_react12.useState)("");
+  const [plateFilter, setPlateFilter] = (0, import_react12.useState)("");
+  const [startDate, setStartDate] = (0, import_react12.useState)("");
+  const [endDate, setEndDate] = (0, import_react12.useState)("");
+  const [categoryFilter, setCategoryFilter] = (0, import_react12.useState)("");
+  const [isAddModalOpen, setIsAddModalOpen] = (0, import_react12.useState)(false);
+  const [isEditModalOpen, setIsEditModalOpen] = (0, import_react12.useState)(false);
+  const [newExpenseData, setNewExpenseData] = (0, import_react12.useState)(initialFormState);
+  const [editingItem, setEditingItem] = (0, import_react12.useState)(null);
+  const [editFormData, setEditFormData] = (0, import_react12.useState)(null);
+  const [isSaving, setIsSaving] = (0, import_react12.useState)(false);
+  (0, import_react12.useEffect)(() => {
     if (editingItem) {
       setEditFormData({
         description: editingItem.description,
@@ -26016,7 +26198,7 @@ var AccountsPayable = () => {
       });
     }
   }, [editingItem]);
-  const allPayableItems = (0, import_react11.useMemo)(() => {
+  const allPayableItems = (0, import_react12.useMemo)(() => {
     const combined = [
       ...fixedExpenses.map((e) => ({
         id: e.id,
@@ -26044,7 +26226,7 @@ var AccountsPayable = () => {
       return { ...item, dueDate: firstPaymentDate };
     }).sort((a, b) => (a.dueDate?.getTime() || 0) - (b.dueDate?.getTime() || 0));
   }, [fixedExpenses, workshopExpenses]);
-  const filteredItems = (0, import_react11.useMemo)(() => {
+  const filteredItems = (0, import_react12.useMemo)(() => {
     return allPayableItems.filter((item) => {
       const vehicle = getVehicle(item.vehicleId);
       const dueDate = item.dueDate;
@@ -26058,7 +26240,7 @@ var AccountsPayable = () => {
       return true;
     });
   }, [allPayableItems, searchTerm, plateFilter, startDate, endDate, categoryFilter, getVehicle]);
-  const filteredTotal = (0, import_react11.useMemo)(() => {
+  const filteredTotal = (0, import_react12.useMemo)(() => {
     return filteredItems.reduce((sum, item) => sum + item.totalAmount, 0);
   }, [filteredItems]);
   const handleDelete = async (item) => {
@@ -26361,7 +26543,7 @@ var AccountsPayable = () => {
 };
 
 // components/management/BillingManagement.tsx
-var import_react12 = __toESM(require_react());
+var import_react13 = __toESM(require_react());
 var import_jsx_runtime19 = __toESM(require_jsx_runtime());
 var formatCurrency2 = (value) => {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -26372,14 +26554,14 @@ var StatCard2 = ({ label, value, className = "" }) => /* @__PURE__ */ (0, import
 ] });
 var BillingManagement = () => {
   const { trips, fixedExpenses, workshopExpenses, getDriver, getVehicle, vehicles } = useTrips();
-  const [selectedMonth, setSelectedMonth] = (0, import_react12.useState)(() => {
+  const [selectedMonth, setSelectedMonth] = (0, import_react13.useState)(() => {
     const now = /* @__PURE__ */ new Date();
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, "0");
     return `${year}-${month}`;
   });
-  const [selectedVehicleId, setSelectedVehicleId] = (0, import_react12.useState)("");
-  const reportData = (0, import_react12.useMemo)(() => {
+  const [selectedVehicleId, setSelectedVehicleId] = (0, import_react13.useState)("");
+  const reportData = (0, import_react13.useMemo)(() => {
     const [year, month] = selectedMonth.split("-").map(Number);
     const monthlyTrips = trips.filter((trip) => {
       if (selectedVehicleId && trip.vehicleId !== selectedVehicleId) {
@@ -26587,14 +26769,14 @@ var BillingManagement = () => {
 };
 
 // components/trip/TripForm.tsx
-var import_react13 = __toESM(require_react());
+var import_react14 = __toESM(require_react());
 var import_jsx_runtime20 = __toESM(require_jsx_runtime());
 var today = new Date(Date.now() - (/* @__PURE__ */ new Date()).getTimezoneOffset() * 6e4).toISOString().split("T")[0];
 var TripForm = ({ setView, trip: existingTrip }) => {
   const { drivers, vehicles, trips, addTrip, updateTrip } = useTrips();
   const { currentDriverId } = useSession();
-  const [isSaving, setIsSaving] = (0, import_react13.useState)(false);
-  const [trip, setTrip] = (0, import_react13.useState)({
+  const [isSaving, setIsSaving] = (0, import_react14.useState)(false);
+  const [trip, setTrip] = (0, import_react14.useState)({
     driverId: existingTrip?.driverId || currentDriverId || "",
     vehicleId: existingTrip?.vehicleId || "",
     origin: existingTrip?.origin || "",
@@ -26623,7 +26805,7 @@ var TripForm = ({ setView, trip: existingTrip }) => {
       setTrip((prev) => ({ ...prev, [name]: value }));
     }
   };
-  const [currentCargo, setCurrentCargo] = (0, import_react13.useState)({ type: "", weight: 0, pricePerTon: 0, tax: 0 });
+  const [currentCargo, setCurrentCargo] = (0, import_react14.useState)({ type: "", weight: 0, pricePerTon: 0, tax: 0 });
   const handleAddCargo = () => {
     if (currentCargo.type && currentCargo.weight > 0 && currentCargo.pricePerTon > 0) {
       setTrip((prev) => ({ ...prev, cargo: [...prev.cargo, { ...currentCargo, id: "" + Math.random() }] }));
@@ -26633,7 +26815,7 @@ var TripForm = ({ setView, trip: existingTrip }) => {
   const handleRemoveCargo = (id) => {
     setTrip((prev) => ({ ...prev, cargo: prev.cargo.filter((c) => c.id !== id) }));
   };
-  const [currentReceivedPayment, setCurrentReceivedPayment] = (0, import_react13.useState)({ type: "Adiantamento" /* ADVANCE */, method: "PIX" /* PIX */, amount: 0, date: today });
+  const [currentReceivedPayment, setCurrentReceivedPayment] = (0, import_react14.useState)({ type: "Adiantamento" /* ADVANCE */, method: "PIX" /* PIX */, amount: 0, date: today });
   const handleAddReceivedPayment = () => {
     if (currentReceivedPayment.amount > 0) {
       setTrip((prev) => ({ ...prev, receivedPayments: [...prev.receivedPayments, { ...currentReceivedPayment, id: "" + Math.random() }] }));
@@ -26643,7 +26825,7 @@ var TripForm = ({ setView, trip: existingTrip }) => {
   const handleRemoveReceivedPayment = (id) => {
     setTrip((prev) => ({ ...prev, receivedPayments: prev.receivedPayments.filter((p) => p.id !== id) }));
   };
-  const [currentFueling, setCurrentFueling] = (0, import_react13.useState)({ station: "", date: today, km: trip.startKm || 0, liters: 0, totalAmount: 0, paymentMethod: "Cart\xE3o" /* CARD */ });
+  const [currentFueling, setCurrentFueling] = (0, import_react14.useState)({ station: "", date: today, km: trip.startKm || 0, liters: 0, totalAmount: 0, paymentMethod: "Cart\xE3o" /* CARD */ });
   const handleAddFueling = () => {
     if (currentFueling.station && currentFueling.liters > 0 && currentFueling.totalAmount > 0) {
       setTrip((prev) => ({ ...prev, fueling: [...prev.fueling, { ...currentFueling, id: "" + Math.random() }] }));
@@ -26653,7 +26835,7 @@ var TripForm = ({ setView, trip: existingTrip }) => {
   const handleRemoveFueling = (id) => {
     setTrip((prev) => ({ ...prev, fueling: prev.fueling.filter((f) => f.id !== id) }));
   };
-  const [currentExpense, setCurrentExpense] = (0, import_react13.useState)({ category: "Outros" /* OTHER */, description: "", amount: 0, date: today });
+  const [currentExpense, setCurrentExpense] = (0, import_react14.useState)({ category: "Outros" /* OTHER */, description: "", amount: 0, date: today });
   const handleAddExpense = () => {
     if (currentExpense.description && currentExpense.amount > 0) {
       setTrip((prev) => ({ ...prev, expenses: [...prev.expenses, { ...currentExpense, id: "" + Math.random() }] }));
@@ -26883,7 +27065,7 @@ var TripForm = ({ setView, trip: existingTrip }) => {
 };
 
 // components/trip/TripDetails.tsx
-var import_react14 = __toESM(require_react());
+var import_react15 = __toESM(require_react());
 var import_jsx_runtime21 = __toESM(require_jsx_runtime());
 var formatCurrency3 = (value) => {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -26915,13 +27097,13 @@ var TripDetails = ({ tripId, setView }) => {
   const { showNotification } = useNotification();
   const trip = getTrip(tripId);
   const today3 = new Date(Date.now() - (/* @__PURE__ */ new Date()).getTimezoneOffset() * 6e4).toISOString().split("T")[0];
-  const [newExpense, setNewExpense] = (0, import_react14.useState)({
+  const [newExpense, setNewExpense] = (0, import_react15.useState)({
     category: "Outros" /* OTHER */,
     description: "",
     amount: 0,
     date: today3
   });
-  const [newReceivedPayment, setNewReceivedPayment] = (0, import_react14.useState)({
+  const [newReceivedPayment, setNewReceivedPayment] = (0, import_react15.useState)({
     type: "Saldo" /* BALANCE */,
     method: "PIX" /* PIX */,
     amount: 0,
@@ -27151,18 +27333,18 @@ var TripDetails = ({ tripId, setView }) => {
 };
 
 // components/trip/ActiveTripView.tsx
-var import_react15 = __toESM(require_react());
+var import_react16 = __toESM(require_react());
 var import_jsx_runtime22 = __toESM(require_jsx_runtime());
 var today2 = new Date(Date.now() - (/* @__PURE__ */ new Date()).getTimezoneOffset() * 6e4).toISOString().split("T")[0];
 var formatCurrency4 = (value) => value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 var ActiveTripView = ({ trip: initialTrip, setView }) => {
   const { trips, updateTrip } = useTrips();
   const { showNotification } = useNotification();
-  const [trip, setTrip] = (0, import_react15.useState)(initialTrip);
-  const [endKm, setEndKm] = (0, import_react15.useState)(0);
-  const [isFinishing, setIsFinishing] = (0, import_react15.useState)(false);
-  const [currentExpense, setCurrentExpense] = (0, import_react15.useState)({ category: "Outros" /* OTHER */, description: "", amount: 0, date: today2 });
-  const [currentFueling, setCurrentFueling] = (0, import_react15.useState)({ station: "", date: today2, km: trip.startKm, liters: 0, totalAmount: 0, paymentMethod: "Cart\xE3o" /* CARD */ });
+  const [trip, setTrip] = (0, import_react16.useState)(initialTrip);
+  const [endKm, setEndKm] = (0, import_react16.useState)(0);
+  const [isFinishing, setIsFinishing] = (0, import_react16.useState)(false);
+  const [currentExpense, setCurrentExpense] = (0, import_react16.useState)({ category: "Outros" /* OTHER */, description: "", amount: 0, date: today2 });
+  const [currentFueling, setCurrentFueling] = (0, import_react16.useState)({ station: "", date: today2, km: trip.startKm, liters: 0, totalAmount: 0, paymentMethod: "Cart\xE3o" /* CARD */ });
   const stationSuggestions = [...new Set(trips.flatMap((t) => t.fueling).map((f) => f.station))];
   const expenseDescSuggestions = [...new Set(trips.flatMap((t) => t.expenses).map((e) => e.description))];
   const handleAddExpense = async () => {
@@ -27327,16 +27509,17 @@ var ActiveTripView = ({ trip: initialTrip, setView }) => {
 };
 
 // components/auth/LoginScreen.tsx
-var import_react16 = __toESM(require_react());
+var import_react17 = __toESM(require_react());
 var import_jsx_runtime23 = __toESM(require_jsx_runtime());
 var LoginScreen = () => {
-  const [username, setUsername] = (0, import_react16.useState)("");
-  const [password, setPassword] = (0, import_react16.useState)("");
-  const [rememberUser, setRememberUser] = (0, import_react16.useState)(true);
-  const [error, setError] = (0, import_react16.useState)("");
-  const [isLoading, setIsLoading] = (0, import_react16.useState)(false);
+  const [username, setUsername] = (0, import_react17.useState)("");
+  const [password, setPassword] = (0, import_react17.useState)("");
+  const [rememberUser, setRememberUser] = (0, import_react17.useState)(true);
+  const [error, setError] = (0, import_react17.useState)("");
+  const [isLoading, setIsLoading] = (0, import_react17.useState)(false);
+  const [focusedField, setFocusedField] = (0, import_react17.useState)(null);
   const { login } = useSession();
-  (0, import_react16.useEffect)(() => {
+  (0, import_react17.useEffect)(() => {
     const rememberedUsername = localStorage.getItem("rememberedUser");
     if (rememberedUsername) {
       setUsername(rememberedUsername);
@@ -27364,66 +27547,147 @@ var LoginScreen = () => {
     }
     setIsLoading(false);
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "flex items-center justify-center min-h-screen bg-slate-900", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)(Card, { className: "w-full max-w-md", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "flex flex-col items-center text-center", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(ICONS.trip, { className: "w-12 h-12 text-blue-400 mb-2" }),
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(CardTitle, { children: "Gest\xE3o de Fretes" }),
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("p", { className: "text-slate-400 text-sm mt-1", children: "Acesse sua conta para continuar" })
-    ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("form", { onSubmit: handleLogin, className: "space-y-6", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
-        Input,
-        {
-          id: "username",
-          label: "Login",
-          value: username,
-          onChange: (e) => setUsername(e.target.value),
-          required: true,
-          autoComplete: "username"
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
-        Input,
-        {
-          id: "password",
-          label: "Senha",
-          type: "password",
-          value: password,
-          onChange: (e) => setPassword(e.target.value),
-          required: true,
-          autoComplete: "current-password"
-        }
-      ),
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "flex items-center justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "flex items-center", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
-          "input",
-          {
-            id: "remember-me",
-            name: "remember-me",
-            type: "checkbox",
-            checked: rememberUser,
-            onChange: (e) => setRememberUser(e.target.checked),
-            className: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-500 rounded bg-slate-700"
-          }
-        ),
-        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("label", { htmlFor: "remember-me", className: "ml-2 block text-sm text-slate-300", children: "Lembrar usu\xE1rio" })
+  return /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "absolute inset-0", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute top-20 right-20 opacity-5 animate-pulse", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("svg", { className: "w-40 h-40 text-amber-400", fill: "currentColor", viewBox: "0 0 24 24", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("path", { d: "M18 18.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM9 18.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" }),
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("path", { d: "M17 8h-11c-.55 0-1 .45-1 1v10h2c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5h5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5h2V10.5c0-.83-.67-1.5-1.5-1.5zm-11 9V9h11v8H6z" })
       ] }) }),
-      error && /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("p", { className: "text-red-500 text-sm text-center", children: error }),
-      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(Button, { type: "submit", className: "w-full", disabled: isLoading || (password || "").trim().length === 0 || (username || "").trim().length === 0, children: isLoading ? "Entrando..." : "Entrar" })
-    ] }) })
-  ] }) });
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute bottom-32 left-10 opacity-5 animate-pulse", style: { animationDelay: "1s" }, children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("svg", { className: "w-32 h-32 text-blue-400", fill: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("path", { d: "M21 7l-3-3H6L3 7v10h18V7zM7 5h10v2H7V5zm12 10H5v-7h14v7z" }) }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "absolute inset-0", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" }),
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute top-0 right-1/4 w-80 h-80 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5 animate-blob" }),
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute bottom-0 left-1/4 w-80 h-80 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-5 animate-blob animation-delay-2000" })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "relative w-full max-w-md mx-auto px-6 z-10", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "mb-6 flex justify-center gap-1", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "w-12 h-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full" }),
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "w-8 h-1 bg-blue-600 rounded-full" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "backdrop-blur-2xl bg-gradient-to-b from-white/8 to-white/3 border border-white/15 rounded-3xl shadow-2xl overflow-hidden", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "h-32 bg-gradient-to-r from-orange-600 via-blue-700 to-blue-900 relative overflow-hidden flex items-center justify-center", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute inset-0 opacity-10", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_25%,rgba(255,255,255,.1)_50%,transparent_50%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1))] bg-[length:40px_40px]" }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "relative z-10 flex flex-col items-center", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center mb-2 shadow-xl", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(ICONS.trip, { className: "w-10 h-10 text-white" }) }) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "p-8 sm:p-10", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "text-center mb-8", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("h1", { className: "text-4xl font-bold text-white mb-2", children: "Central Truck" }),
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "flex items-center justify-center gap-2 mb-4", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "h-px w-8 bg-gradient-to-r from-transparent to-orange-500" }),
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("p", { className: "text-orange-400 text-sm font-semibold uppercase tracking-wider", children: "Transportadora" }),
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "h-px w-8 bg-gradient-to-l from-transparent to-orange-500" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("p", { className: "text-slate-400 text-sm", children: "Sistema de Gest\xE3o de Fretes e Opera\xE7\xF5es" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("form", { onSubmit: handleLogin, className: "space-y-5", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "relative group", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("label", { className: "block text-sm font-semibold text-slate-300 mb-2", children: "Usu\xE1rio" }),
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+                Input,
+                {
+                  id: "username",
+                  value: username,
+                  onChange: (e) => setUsername(e.target.value),
+                  onFocus: () => setFocusedField("username"),
+                  onBlur: () => setFocusedField(null),
+                  required: true,
+                  autoComplete: "username",
+                  placeholder: "Digite seu usu\xE1rio",
+                  className: "bg-white/5 border border-white/10 text-white placeholder:text-slate-500"
+                }
+              ),
+              focusedField === "username" && /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "relative group", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("label", { className: "block text-sm font-semibold text-slate-300 mb-2", children: "Senha" }),
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+                Input,
+                {
+                  id: "password",
+                  type: "password",
+                  value: password,
+                  onChange: (e) => setPassword(e.target.value),
+                  onFocus: () => setFocusedField("password"),
+                  onBlur: () => setFocusedField(null),
+                  required: true,
+                  autoComplete: "current-password",
+                  placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
+                  className: "bg-white/5 border border-white/10 text-white placeholder:text-slate-500"
+                }
+              ),
+              focusedField === "password" && /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "flex items-center pt-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+                "input",
+                {
+                  id: "remember-me",
+                  type: "checkbox",
+                  checked: rememberUser,
+                  onChange: (e) => setRememberUser(e.target.checked),
+                  className: "h-4 w-4 rounded bg-white/10 border border-white/20 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 cursor-pointer"
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("label", { htmlFor: "remember-me", className: "ml-3 text-sm text-slate-300 cursor-pointer hover:text-orange-400 transition-colors", children: "Lembrar meu usu\xE1rio" })
+            ] }),
+            error && /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "p-4 bg-red-500/15 border border-red-500/30 rounded-lg backdrop-blur-sm", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("p", { className: "text-red-300 text-sm text-center font-medium", children: error }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsx)(
+              "button",
+              {
+                type: "submit",
+                disabled: isLoading || (password || "").trim().length === 0 || (username || "").trim().length === 0,
+                className: "w-full mt-6 py-3 px-4 rounded-xl font-bold text-white bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100 shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 uppercase tracking-wider text-sm",
+                children: isLoading ? /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("span", { className: "flex items-center justify-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("span", { className: "animate-spin inline-block w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full" }),
+                  "Entrando..."
+                ] }) : "\u2192 Acessar Sistema"
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("p", { className: "text-center text-xs text-slate-500 mt-6 flex items-center justify-center gap-2", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("svg", { className: "w-3 h-3", fill: "currentColor", viewBox: "0 0 20 20", children: /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("path", { fillRule: "evenodd", d: "M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z", clipRule: "evenodd" }) }),
+              "Conex\xE3o segura e criptografada"
+            ] })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime23.jsxs)("div", { className: "mt-8 flex justify-center gap-3", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "w-3 h-3 rounded-full bg-orange-500/60" }),
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "w-3 h-3 rounded-full bg-blue-600/60" }),
+        /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("div", { className: "w-3 h-3 rounded-full bg-orange-500/40" })
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime23.jsx)("style", { children: `
+                @keyframes blob {
+                    0%, 100% { transform: translate(0, 0) scale(1); }
+                    25% { transform: translate(20px, -50px) scale(1.1); }
+                    50% { transform: translate(-20px, 20px) scale(0.9); }
+                    75% { transform: translate(50px, 50px) scale(1.05); }
+                }
+                .animate-blob {
+                    animation: blob 7s infinite;
+                }
+                .animation-delay-2000 {
+                    animation-delay: 2s;
+                }
+                .animation-delay-4000 {
+                    animation-delay: 4s;
+                }
+            ` })
+  ] });
 };
 
 // components/profile/ProfileSettings.tsx
-var import_react17 = __toESM(require_react());
+var import_react18 = __toESM(require_react());
 var import_jsx_runtime24 = __toESM(require_jsx_runtime());
 var ProfileSettings = ({ setView }) => {
   const { session, changePassword } = useSession();
   const { showNotification } = useNotification();
-  const [oldPassword, setOldPassword] = (0, import_react17.useState)("");
-  const [newPassword, setNewPassword] = (0, import_react17.useState)("");
-  const [confirmPassword, setConfirmPassword] = (0, import_react17.useState)("");
-  const [isLoading, setIsLoading] = (0, import_react17.useState)(false);
+  const [oldPassword, setOldPassword] = (0, import_react18.useState)("");
+  const [newPassword, setNewPassword] = (0, import_react18.useState)("");
+  const [confirmPassword, setConfirmPassword] = (0, import_react18.useState)("");
+  const [isLoading, setIsLoading] = (0, import_react18.useState)(false);
   const role = session.user?.role;
   const userId = session.user?.userId || "";
   const driverId = session.user?.driverId || "";
@@ -27505,10 +27769,10 @@ var ProfileSettings = ({ setView }) => {
 };
 
 // components/analysis/AnalysisDashboard.tsx
-var import_react19 = __toESM(require_react());
+var import_react20 = __toESM(require_react());
 
 // components/charts/LineChart.tsx
-var import_react18 = __toESM(require_react());
+var import_react19 = __toESM(require_react());
 var import_jsx_runtime25 = __toESM(require_jsx_runtime());
 var formatCurrency5 = (value) => {
   if (Math.abs(value) >= 1e3) {
@@ -27517,8 +27781,8 @@ var formatCurrency5 = (value) => {
   return value.toLocaleString("pt-BR");
 };
 var LineChart = ({ labels, datasets, onHover }) => {
-  const chartRef = (0, import_react18.useRef)(null);
-  const [activeIndex, setActiveIndex] = (0, import_react18.useState)(null);
+  const chartRef = (0, import_react19.useRef)(null);
+  const [activeIndex, setActiveIndex] = (0, import_react19.useState)(null);
   if (!datasets || datasets.length === 0 || labels.length === 0) {
     return /* @__PURE__ */ (0, import_jsx_runtime25.jsx)("div", { className: "flex items-center justify-center h-full text-slate-400", children: "Sem dados para exibir" });
   }
@@ -27648,11 +27912,11 @@ var AnalysisDashboard = () => {
   const today3 = /* @__PURE__ */ new Date();
   const startOfYear = new Date(today3.getFullYear(), 0, 1);
   const formatToMonthString = (date) => `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;
-  const [selectedVehicleId, setSelectedVehicleId] = (0, import_react19.useState)("");
-  const [startDate, setStartDate] = (0, import_react19.useState)(formatToMonthString(startOfYear));
-  const [endDate, setEndDate] = (0, import_react19.useState)(formatToMonthString(today3));
-  const [lineTooltip, setLineTooltip] = (0, import_react19.useState)(null);
-  const filteredData = (0, import_react19.useMemo)(() => {
+  const [selectedVehicleId, setSelectedVehicleId] = (0, import_react20.useState)("");
+  const [startDate, setStartDate] = (0, import_react20.useState)(formatToMonthString(startOfYear));
+  const [endDate, setEndDate] = (0, import_react20.useState)(formatToMonthString(today3));
+  const [lineTooltip, setLineTooltip] = (0, import_react20.useState)(null);
+  const filteredData = (0, import_react20.useMemo)(() => {
     const [startYear, startMonth] = startDate.split("-").map(Number);
     const [endYear, endMonth] = endDate.split("-").map(Number);
     const start = new Date(Date.UTC(startYear, startMonth - 1, 1));
@@ -27687,7 +27951,7 @@ var AnalysisDashboard = () => {
     const filteredWorkshopExpenses = getExpensesInRange(workshopExpenses);
     return { filteredTrips, filteredFixedExpenses, filteredWorkshopExpenses };
   }, [startDate, endDate, selectedVehicleId, trips, fixedExpenses, workshopExpenses]);
-  const kpiData = (0, import_react19.useMemo)(() => {
+  const kpiData = (0, import_react20.useMemo)(() => {
     const totalRevenue = filteredData.filteredTrips.reduce((sum, trip) => {
       return sum + trip.cargo.reduce((cargoSum, c) => cargoSum + c.weight * c.pricePerTon, 0);
     }, 0);
@@ -27709,7 +27973,7 @@ var AnalysisDashboard = () => {
       totalProfit
     };
   }, [filteredData]);
-  const monthlyAnalysisData = (0, import_react19.useMemo)(() => {
+  const monthlyAnalysisData = (0, import_react20.useMemo)(() => {
     const [startYear, startMonth] = startDate.split("-").map(Number);
     const [endYear, endMonth] = endDate.split("-").map(Number);
     const monthlyDataMap = /* @__PURE__ */ new Map();
@@ -27920,8 +28184,8 @@ var MainContent = ({ view, setView }) => {
   }
 };
 var AppContent = () => {
-  const [view, setView] = (0, import_react20.useState)({ type: "dashboard" });
-  const [isSidebarOpen, setIsSidebarOpen] = (0, import_react20.useState)(false);
+  const [view, setView] = (0, import_react21.useState)({ type: "dashboard" });
+  const [isSidebarOpen, setIsSidebarOpen] = (0, import_react21.useState)(false);
   const { session } = useSession();
   const { isLoading } = useTrips();
   if (!session.user) {
@@ -27960,7 +28224,7 @@ if (!rootElement) {
 }
 var root = import_client.default.createRoot(rootElement);
 root.render(
-  /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(import_react21.default.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(App_default, {}) })
+  /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(import_react22.default.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime29.jsx)(App_default, {}) })
 );
 /*! Bundled license information:
 
