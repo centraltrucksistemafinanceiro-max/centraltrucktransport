@@ -6,6 +6,7 @@ import { useNotification } from '../../context/NotificationContext';
 import { Button } from '../ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Input } from '../ui/Input';
+import { Modal } from '../ui/Modal';
 import { ICONS } from '../../constants';
 import { Driver } from '../../types';
 
@@ -17,6 +18,9 @@ const DriverRow: React.FC<{ driver: Driver }> = ({ driver }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [driverData, setDriverData] = useState(driver);
     const [isSaving, setIsSaving] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [newPassword, setNewPassword] = useState('');
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
 
     useEffect(() => {
         setDriverData(driver);
@@ -41,11 +45,26 @@ const DriverRow: React.FC<{ driver: Driver }> = ({ driver }) => {
         }
     };
 
-    const handleResetPassword = async () => {
-        const newPassword = prompt(`Digite a nova senha para ${driver.name}.`);
-        if (newPassword && newPassword.trim().length > 0) {
-            const result = await changePassword(driver.id, 'driver', newPassword.trim());
-            showNotification(result.message, result.success ? 'success' : 'error');
+    const handleResetPassword = () => {
+        setNewPassword('');
+        setShowPasswordModal(true);
+    };
+
+    const handleConfirmPasswordChange = async () => {
+        if (!newPassword || newPassword.trim().length < 6) {
+            showNotification('A senha deve ter pelo menos 6 caracteres.', 'error');
+            return;
+        }
+        
+        setIsChangingPassword(true);
+        const result = await changePassword(driver.id, 'driver', newPassword.trim());
+        setIsChangingPassword(false);
+        
+        showNotification(result.message, result.success ? 'success' : 'error');
+        
+        if (result.success) {
+            setShowPasswordModal(false);
+            setNewPassword('');
         }
     };
 
@@ -65,26 +84,75 @@ const DriverRow: React.FC<{ driver: Driver }> = ({ driver }) => {
     }
 
     return (
-        <div className={`bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3 transition-opacity ${driver.status === 'inactive' ? 'opacity-50' : ''}`}>
-            <div>
-                <p className="font-semibold text-white flex items-center gap-2">
-                    {driver.name}
-                    <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${driver.status === 'active' ? 'bg-green-500 text-white' : 'bg-slate-500 text-white'}`}>
-                        {driver.status === 'active' ? 'Ativo' : 'Inativo'}
-                    </span>
-                </p>
-                <p className="text-sm text-slate-400">CNH: {driver.cnh || 'Não informado'} | Tel: {driver.phone}</p>
+        <>
+            <div className={`bg-slate-700 p-4 rounded-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3 transition-opacity ${driver.status === 'inactive' ? 'opacity-50' : ''}`}>
+                <div>
+                    <p className="font-semibold text-white flex items-center gap-2">
+                        {driver.name}
+                        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${driver.status === 'active' ? 'bg-green-500 text-white' : 'bg-slate-500 text-white'}`}>
+                            {driver.status === 'active' ? 'Ativo' : 'Inativo'}
+                        </span>
+                    </p>
+                    <p className="text-sm text-slate-400">CNH: {driver.cnh || 'Não informado'} | Tel: {driver.phone}</p>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end">
+                    <Button variant="secondary" onClick={() => setIsEditing(true)}>Editar</Button>
+                    <Button variant="secondary" onClick={handleResetPassword}>
+                        <ICONS.lock className="w-4 h-4 mr-1" />
+                        Alterar Senha
+                    </Button>
+                    <Button variant={driver.status === 'active' ? 'secondary' : 'primary'} onClick={handleToggleStatus}>
+                        {driver.status === 'active' ? 'Inativar' : 'Ativar'}
+                    </Button>
+                    <Button variant="danger" onClick={handleDelete} disabled={!isDeletable} title={!isDeletable ? "Motorista não pode ser excluído pois está associado a viagens." : "Excluir motorista"}>
+                        Excluir
+                    </Button>
+                </div>
             </div>
-            <div className="flex flex-wrap gap-2 mt-3 md:mt-0 justify-start md:justify-end">
-                <Button variant="secondary" onClick={() => setIsEditing(true)}>Editar</Button>
-                <Button variant={driver.status === 'active' ? 'secondary' : 'primary'} onClick={handleToggleStatus}>
-                    {driver.status === 'active' ? 'Inativar' : 'Ativar'}
-                </Button>
-                <Button variant="danger" onClick={handleDelete} disabled={!isDeletable} title={!isDeletable ? "Motorista não pode ser excluído pois está associado a viagens." : "Excluir motorista"}>
-                    Excluir
-                </Button>
-            </div>
-        </div>
+
+            <Modal
+                isOpen={showPasswordModal}
+                onClose={() => {
+                    setShowPasswordModal(false);
+                    setNewPassword('');
+                }}
+                title={`Alterar Senha - ${driver.name}`}
+            >
+                <div className="space-y-4">
+                    <p className="text-slate-300 text-sm">
+                        Digite a nova senha para o motorista. A senha deve ter pelo menos 6 caracteres.
+                    </p>
+                    <Input
+                        id={`new-password-${driver.id}`}
+                        label="Nova Senha"
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        minLength={6}
+                        placeholder="Digite a nova senha"
+                        autoFocus
+                    />
+                    <div className="flex gap-2 justify-end">
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setShowPasswordModal(false);
+                                setNewPassword('');
+                            }}
+                            disabled={isChangingPassword}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            onClick={handleConfirmPasswordChange}
+                            disabled={isChangingPassword || !newPassword || newPassword.length < 6}
+                        >
+                            {isChangingPassword ? 'Alterando...' : 'Alterar Senha'}
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+        </>
     );
 };
 
