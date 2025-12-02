@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTrips } from '../../context/TripContext';
 import { useSession } from '../../context/SessionContext';
 import { TripStatus } from '../../types';
@@ -27,10 +27,36 @@ const getStatusClass = (status: TripStatus) => {
 export const TripList: React.FC<TripListProps> = ({ setView }) => {
   const { trips, getDriver, getVehicle } = useTrips();
   const { currentDriverId } = useSession();
+  
+  // Filter states
+  const [filterType, setFilterType] = useState<'all' | 'date' | 'month'>('all');
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [startMonth, setStartMonth] = useState<string>('');
+  const [endMonth, setEndMonth] = useState<string>('');
 
   const displayedTrips = currentDriverId
     ? trips.filter(trip => trip.driverId === currentDriverId)
     : trips;
+
+  // Apply filters
+  const filteredTrips = displayedTrips.filter(trip => {
+    if (filterType === 'date' && selectedDate) {
+      return trip.startDate === selectedDate;
+    }
+    if (filterType === 'month' && startMonth && endMonth) {
+      const tripDate = new Date(trip.startDate + 'T00:00:00');
+      const tripYearMonth = tripDate.getFullYear() + '-' + String(tripDate.getMonth() + 1).padStart(2, '0');
+      return tripYearMonth >= startMonth && tripYearMonth <= endMonth;
+    }
+    return true;
+  });
+
+  const handleClearFilters = () => {
+    setFilterType('all');
+    setSelectedDate('');
+    setStartMonth('');
+    setEndMonth('');
+  };
 
   return (
     <Card>
@@ -41,8 +67,106 @@ export const TripList: React.FC<TripListProps> = ({ setView }) => {
         </div>
       </CardHeader>
       <CardContent>
+        {/* Filter section */}
+        <div className="mb-6 p-4 bg-slate-800 rounded-lg border border-slate-700">
+          <div className="space-y-4">
+            {/* Filter type selector */}
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => setFilterType('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filterType === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                }`}
+              >
+                Todas as Viagens
+              </button>
+              <button
+                onClick={() => setFilterType('date')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filterType === 'date'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                }`}
+              >
+                Filtrar por Data
+              </button>
+              <button
+                onClick={() => setFilterType('month')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filterType === 'month'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                }`}
+              >
+                Filtrar por Período
+              </button>
+            </div>
+
+            {/* Date filter */}
+            {filterType === 'date' && (
+              <div className="flex flex-wrap gap-3 items-end">
+                <div className="flex-1 min-w-[200px]">
+                  <label className="block text-sm text-slate-300 mb-2">Data da Viagem</label>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Month range filter */}
+            {filterType === 'month' && (
+              <div className="flex flex-wrap gap-3 items-end">
+                <div className="flex-1 min-w-[200px]">
+                  <label className="block text-sm text-slate-300 mb-2">Mês Inicial</label>
+                  <input
+                    type="month"
+                    value={startMonth}
+                    onChange={(e) => setStartMonth(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="flex-1 min-w-[200px]">
+                  <label className="block text-sm text-slate-300 mb-2">Mês Final</label>
+                  <input
+                    type="month"
+                    value={endMonth}
+                    onChange={(e) => setEndMonth(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Clear filters button - show only when filters are active */}
+            {filterType !== 'all' && (selectedDate || startMonth || endMonth) && (
+              <div className="flex justify-end">
+                <button
+                  onClick={handleClearFilters}
+                  className="px-3 py-1 text-sm text-slate-300 hover:text-red-400 transition-colors"
+                >
+                  ✕ Limpar Filtros
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Results info */}
+        {filterType !== 'all' && (
+          <p className="text-sm text-slate-400 mb-4">
+            Exibindo {filteredTrips.length} viagem(ns) encontrada(s)
+          </p>
+        )}
+
+        {/* Trips list */}
         <div className="space-y-4">
-          {displayedTrips.length > 0 ? displayedTrips.map(trip => {
+          {filteredTrips.length > 0 ? filteredTrips.map(trip => {
             const driver = getDriver(trip.driverId);
             const vehicle = getVehicle(trip.vehicleId);
             return (
