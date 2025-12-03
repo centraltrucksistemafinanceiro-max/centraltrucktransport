@@ -17,37 +17,75 @@ export const calculateTrechoKm = (trecho: Trecho): number => {
 };
 
 /**
- * Calcula métricas agregadas de trechos
+ * Calcula métricas agregadas de trechos com estimativas baseadas em Scania R440
+ * 
+ * LÓGICA:
+ * 1. mediaGeral = kmTotal / litrosTotais (REAL - não altera)
+ * 2. Calcula percentuais de km carregado e vazio
+ * 3. Estima médias usando faixas Scania R440 + interpolação
+ * 4. Estima combustível por trecho e gera indicadores de eficiência
  */
-export const calculateTrechoMetrics = (trechos: Trecho[], totalLiters: number, totalKm: number) => {
-  const carregadoTrechos = trechos.filter(t => t.status === TrechoStatus.CARREGADO);
-  const vazioTrechos = trechos.filter(t => t.status === TrechoStatus.VAZIO);
+export const calculateTrechoMetrics = (trechos: Trecho[] = [], totalLiters: number, totalKm: number) => {
+  const safeTrechos = trechos || [];
+  const carregadoTrechos = safeTrechos.filter(t => t.status === TrechoStatus.CARREGADO);
+  const vazioTrechos = safeTrechos.filter(t => t.status === TrechoStatus.VAZIO);
 
   const kmCarregado = carregadoTrechos.reduce((sum, t) => sum + calculateTrechoKm(t), 0);
   const kmVazio = vazioTrechos.reduce((sum, t) => sum + calculateTrechoKm(t), 0);
 
-  // Média geral
-  const mediaGeral = totalLiters > 0 && totalKm > 0 ? (totalKm / totalLiters).toFixed(2) : '0.00';
+  // ✔️ 1. Média geral (REAL) - mantém o cálculo original
+  const mediaGeral = totalLiters > 0 && totalKm > 0 ? totalKm / totalLiters : 0;
 
-  // Distribuição proporcional de combustível por trecho
-  const proporcaoCarregado = totalKm > 0 ? kmCarregado / totalKm : 0;
-  const proporcaoVazio = totalKm > 0 ? kmVazio / totalKm : 0;
+  // ✔️ 2. Calcular percentuais dos trechos
+  const percentualCarregado = totalKm > 0 ? kmCarregado / totalKm : 0;
+  const percentualVazio = totalKm > 0 ? kmVazio / totalKm : 0;
 
-  const litrosCarregado = totalLiters * proporcaoCarregado;
-  const litrosVazio = totalLiters * proporcaoVazio;
+  // ✔️ 3. Faixas Scania R440 (referências para estimativa)
+  const MIN_CARREGADO = 2.8;
+  const MAX_CARREGADO = 3.4;
+  const MIN_VAZIO = 4.0;
+  const MAX_VAZIO = 5.2;
 
-  // Média por tipo de trecho
-  const mediaCarregado = litrosCarregado > 0 && kmCarregado > 0 ? (kmCarregado / litrosCarregado).toFixed(2) : '0.00';
-  const mediaVazio = litrosVazio > 0 && kmVazio > 0 ? (kmVazio / litrosVazio).toFixed(2) : '0.00';
+  // ✔️ 4. Calcular médias ESTIMADAS com interpolação
+  // As médias variam entre min e max proporcionalmente ao percentual de km rodado
+  const mediaCarregadoEstimado = MIN_CARREGADO + (percentualCarregado * (MAX_CARREGADO - MIN_CARREGADO));
+  const mediaVazioEstimado = MIN_VAZIO + (percentualVazio * (MAX_VAZIO - MIN_VAZIO));
+
+  // Estimar litros por segmento usando as médias estimadas
+  const litrosCarregadoEstimado = mediaCarregadoEstimado > 0 ? kmCarregado / mediaCarregadoEstimado : 0;
+  const litrosVazioEstimado = mediaVazioEstimado > 0 ? kmVazio / mediaVazioEstimado : 0;
+
+  // ✔️ 6. Indicadores de eficiência
+  const indicatorCarregado = mediaCarregadoEstimado < MIN_CARREGADO
+    ? 'abaixo do esperado'
+    : mediaCarregadoEstimado > MAX_CARREGADO
+      ? 'acima do esperado'
+      : 'dentro do esperado';
+
+  const indicatorVazio = mediaVazioEstimado < MIN_VAZIO
+    ? 'abaixo do esperado'
+    : mediaVazioEstimado > MAX_VAZIO
+      ? 'acima do esperado'
+      : 'dentro do esperado';
 
   return {
+    // ✔️ 5. Campos exibidos no relatório
     kmCarregado,
     kmVazio,
-    litrosCarregado,
-    litrosVazio,
-    mediaCarregado: parseFloat(mediaCarregado),
-    mediaVazio: parseFloat(mediaVazio),
-    mediaGeral: parseFloat(mediaGeral),
+    percentualCarregado,
+    percentualVazio,
+    litrosCarregadoEstimado,
+    litrosVazioEstimado,
+    mediaCarregadoEstimado,
+    mediaVazioEstimado,
+    mediaGeral,
+    indicatorCarregado,
+    indicatorVazio,
+    // Aliases para compatibilidade com componentes existentes
+    litrosCarregado: litrosCarregadoEstimado,
+    litrosVazio: litrosVazioEstimado,
+    mediaCarregado: mediaCarregadoEstimado,
+    mediaVazio: mediaVazioEstimado,
   };
 };
 
@@ -55,8 +93,9 @@ export const calculateTrechoMetrics = (trechos: Trecho[], totalLiters: number, t
  * Função helper para distribuir combustível por trecho
  * Retorna objeto com combustível esperado para cada trecho
  */
-export const distributeFuelByTrecho = (trechos: Trecho[], mediaGeral: number) => {
-  return trechos.reduce((acc, trecho) => {
+export const distributeFuelByTrecho = (trechos: Trecho[] = [], mediaGeral: number) => {
+  const safeTrechos = trechos || [];
+  return safeTrechos.reduce((acc, trecho) => {
     const km = calculateTrechoKm(trecho);
     const combustivel = calculateFuelForTrecho(km, mediaGeral);
     acc[trecho.id] = combustivel;

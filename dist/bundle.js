@@ -26780,26 +26780,43 @@ var import_react14 = __toESM(require_react());
 var calculateTrechoKm = (trecho) => {
   return Math.max(0, trecho.kmFinal - trecho.kmInicial);
 };
-var calculateTrechoMetrics = (trechos, totalLiters2, totalKm) => {
-  const carregadoTrechos = trechos.filter((t) => t.status === "Carregado" /* CARREGADO */);
-  const vazioTrechos = trechos.filter((t) => t.status === "Vazio" /* VAZIO */);
+var calculateTrechoMetrics = (trechos = [], totalLiters2, totalKm) => {
+  const safeTrechos = trechos || [];
+  const carregadoTrechos = safeTrechos.filter((t) => t.status === "Carregado" /* CARREGADO */);
+  const vazioTrechos = safeTrechos.filter((t) => t.status === "Vazio" /* VAZIO */);
   const kmCarregado = carregadoTrechos.reduce((sum, t) => sum + calculateTrechoKm(t), 0);
   const kmVazio = vazioTrechos.reduce((sum, t) => sum + calculateTrechoKm(t), 0);
-  const mediaGeral = totalLiters2 > 0 && totalKm > 0 ? (totalKm / totalLiters2).toFixed(2) : "0.00";
-  const proporcaoCarregado = totalKm > 0 ? kmCarregado / totalKm : 0;
-  const proporcaoVazio = totalKm > 0 ? kmVazio / totalKm : 0;
-  const litrosCarregado = totalLiters2 * proporcaoCarregado;
-  const litrosVazio = totalLiters2 * proporcaoVazio;
-  const mediaCarregado = litrosCarregado > 0 && kmCarregado > 0 ? (kmCarregado / litrosCarregado).toFixed(2) : "0.00";
-  const mediaVazio = litrosVazio > 0 && kmVazio > 0 ? (kmVazio / litrosVazio).toFixed(2) : "0.00";
+  const mediaGeral = totalLiters2 > 0 && totalKm > 0 ? totalKm / totalLiters2 : 0;
+  const percentualCarregado = totalKm > 0 ? kmCarregado / totalKm : 0;
+  const percentualVazio = totalKm > 0 ? kmVazio / totalKm : 0;
+  const MIN_CARREGADO = 2.8;
+  const MAX_CARREGADO = 3.4;
+  const MIN_VAZIO = 4;
+  const MAX_VAZIO = 5.2;
+  const mediaCarregadoEstimado = MIN_CARREGADO + percentualCarregado * (MAX_CARREGADO - MIN_CARREGADO);
+  const mediaVazioEstimado = MIN_VAZIO + percentualVazio * (MAX_VAZIO - MIN_VAZIO);
+  const litrosCarregadoEstimado = mediaCarregadoEstimado > 0 ? kmCarregado / mediaCarregadoEstimado : 0;
+  const litrosVazioEstimado = mediaVazioEstimado > 0 ? kmVazio / mediaVazioEstimado : 0;
+  const indicatorCarregado = mediaCarregadoEstimado < MIN_CARREGADO ? "abaixo do esperado" : mediaCarregadoEstimado > MAX_CARREGADO ? "acima do esperado" : "dentro do esperado";
+  const indicatorVazio = mediaVazioEstimado < MIN_VAZIO ? "abaixo do esperado" : mediaVazioEstimado > MAX_VAZIO ? "acima do esperado" : "dentro do esperado";
   return {
+    // ✔️ 5. Campos exibidos no relatório
     kmCarregado,
     kmVazio,
-    litrosCarregado,
-    litrosVazio,
-    mediaCarregado: parseFloat(mediaCarregado),
-    mediaVazio: parseFloat(mediaVazio),
-    mediaGeral: parseFloat(mediaGeral)
+    percentualCarregado,
+    percentualVazio,
+    litrosCarregadoEstimado,
+    litrosVazioEstimado,
+    mediaCarregadoEstimado,
+    mediaVazioEstimado,
+    mediaGeral,
+    indicatorCarregado,
+    indicatorVazio,
+    // Aliases para compatibilidade com componentes existentes
+    litrosCarregado: litrosCarregadoEstimado,
+    litrosVazio: litrosVazioEstimado,
+    mediaCarregado: mediaCarregadoEstimado,
+    mediaVazio: mediaVazioEstimado
   };
 };
 
