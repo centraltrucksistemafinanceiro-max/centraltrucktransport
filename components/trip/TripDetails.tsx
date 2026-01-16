@@ -204,6 +204,26 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                             </CardContent>
                         </Card>
 
+                        <Card className="bg-slate-900 printable-card">
+                            <CardContent>
+                                <Section title="Cargas da Viagem">
+                                    <div className="space-y-1">
+                                        {trip.cargo.length > 0 ? trip.cargo.map(cargo => (
+                                            <div key={cargo.id} className="flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md">
+                                                <div className="flex-1">
+                                                    <span className="text-sm text-slate-300">{cargo.type} - {cargo.weight}t × {formatCurrency(cargo.pricePerTon)}/t</span>
+                                                    {cargo.tax && cargo.tax > 0 && <span className="text-xs text-red-400 ml-2">(Imposto: -{formatCurrency(cargo.tax)})</span>}
+                                                </div>
+                                                <span className="text-sm font-medium text-white">{formatCurrency((cargo.weight * cargo.pricePerTon) - (cargo.tax || 0))}</span>
+                                            </div>
+                                        )) : <p className="text-sm text-slate-500 text-center py-2">Nenhuma carga registrada.</p>}
+                                    </div>
+                                    <hr className="border-slate-700 my-2" />
+                                    <InfoItem label="Total Frete Bruto" value={totals.totalFreight} isCurrency />
+                                </Section>
+                            </CardContent>
+                        </Card>
+
                         {trip.trechos && trip.trechos.length > 0 && (
                             <Card className="bg-slate-900 printable-card">
                                 <CardContent>
