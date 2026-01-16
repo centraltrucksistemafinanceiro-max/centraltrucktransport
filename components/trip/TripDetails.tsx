@@ -314,7 +314,9 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                                     <div className="space-y-1">
                                         {trip.fueling.length > 0 ? trip.fueling.map(fuel => (
                                             <div key={fuel.id} className="flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md">
-                                                <span className="text-sm text-slate-300">{fuel.station} ({fuel.liters}L)</span>
+                                                <div className="flex-1">
+                                                    <span className="text-sm text-slate-300">{fuel.station} - {fuel.km}km ({fuel.liters}L)</span>
+                                                </div>
                                                 <div className="flex items-center gap-3">
                                                     <span className="text-sm font-medium text-white">{formatCurrency(fuel.totalAmount)}</span>
                                                     <Button variant="danger" onClick={() => handleRemoveFueling(fuel.id)} className="p-1 h-6 w-6 remove-btn">

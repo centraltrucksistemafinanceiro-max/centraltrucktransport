@@ -336,7 +336,7 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                         <div className="space-y-2 mb-4 min-h-[60px]">
                         {trip.fueling.map((f) => (
                             <div key={f.id} className="bg-slate-700 p-2 rounded flex items-center justify-between">
-                               <span>{f.station}: {f.liters}L</span>
+                               <span>{f.station} - {f.km}km: {f.liters}L</span>
                                <div className="flex items-center gap-2">
                                 <span className="font-bold">{formatCurrency(f.totalAmount)}</span>
                                 <Button type="button" variant="danger" onClick={() => handleRemoveFueling(f.id)} className="p-1 h-7 w-7"><ICONS.trash className="h-4 w-4"/></Button>

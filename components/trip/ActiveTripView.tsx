@@ -172,7 +172,7 @@ export const ActiveTripView: React.FC<ActiveTripViewProps> = ({ trip: initialTri
                             <div key={f.id} className="bg-slate-700 p-3 rounded flex items-center justify-between">
                                 <div>
                                    <p className="font-semibold text-white">{f.station}</p>
-                                   <p className="text-sm text-slate-300">{f.liters}L - {new Date(f.date + 'T00:00:00').toLocaleDateString('pt-BR')}</p>
+                                   <p className="text-sm text-slate-300">{f.km}km - {f.liters}L - {new Date(f.date + 'T00:00:00').toLocaleDateString('pt-BR')}</p>
                                 </div>
                                <div className="flex items-center gap-4">
                                 <span className="font-bold text-lg">{formatCurrency(f.totalAmount)}</span>
