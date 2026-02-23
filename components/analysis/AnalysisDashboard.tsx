@@ -272,7 +272,7 @@ export const AnalysisDashboard: React.FC = () => {
                                         {(() => {
                                             let totalKmCarregado = 0;
                                             let totalKmVazio = 0;
-                                            let totalLitros = 0;
+                                            let totalLiters = 0;
                                             let totalKm = 0;
 
                                             filteredData.filteredTrips.forEach(trip => {
