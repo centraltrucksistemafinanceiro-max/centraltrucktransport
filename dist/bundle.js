@@ -27128,7 +27128,9 @@ var TripForm = ({ setView, trip: existingTrip }) => {
           /* @__PURE__ */ (0, import_jsx_runtime20.jsx)("div", { className: "space-y-2 mb-4 min-h-[60px]", children: trip.fueling.map((f) => /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("div", { className: "bg-slate-700 p-2 rounded flex items-center justify-between", children: [
             /* @__PURE__ */ (0, import_jsx_runtime20.jsxs)("span", { children: [
               f.station,
-              ": ",
+              " - ",
+              f.km,
+              "km: ",
               f.liters,
               "L"
             ] }),
@@ -27363,6 +27365,28 @@ var TripDetails = ({ tripId, setView }) => {
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-right text-xs text-slate-500 -mt-2", children: "(Frete Bruto - Despesas - Comiss\xE3o)" })
           ] }) }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Card, { className: "bg-slate-900 printable-card", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(Section, { title: "Cargas da Viagem", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("div", { className: "space-y-1", children: trip.cargo.length > 0 ? trip.cargo.map((cargo) => /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex-1", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("span", { className: "text-sm text-slate-300", children: [
+                  cargo.type,
+                  " - ",
+                  cargo.weight,
+                  "t \xD7 ",
+                  formatCurrency3(cargo.pricePerTon),
+                  "/t"
+                ] }),
+                cargo.tax && cargo.tax > 0 && /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("span", { className: "text-xs text-red-400 ml-2", children: [
+                  "(Imposto: -",
+                  formatCurrency3(cargo.tax),
+                  ")"
+                ] })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("span", { className: "text-sm font-medium text-white", children: formatCurrency3(cargo.weight * cargo.pricePerTon - (cargo.tax || 0)) })
+            ] }, cargo.id)) : /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "text-sm text-slate-500 text-center py-2", children: "Nenhuma carga registrada." }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("hr", { className: "border-slate-700 my-2" }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "Total Frete Bruto", value: totals.totalFreight, isCurrency: true })
+          ] }) }) }),
           trip.trechos && trip.trechos.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Card, { className: "bg-slate-900 printable-card", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(Section, { title: "An\xE1lise de Consumo por Trecho", children: [
             /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "grid grid-cols-2 gap-4 mb-4", children: [
               /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "bg-slate-800 p-3 rounded-lg", children: [
@@ -27440,12 +27464,14 @@ var TripDetails = ({ tripId, setView }) => {
           ] }) }) }),
           /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Card, { className: "bg-slate-900 printable-card", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(Section, { title: "Detalhes dos Abastecimentos", children: [
             /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("div", { className: "space-y-1", children: trip.fueling.length > 0 ? trip.fueling.map((fuel) => /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("span", { className: "text-sm text-slate-300", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("div", { className: "flex-1", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("span", { className: "text-sm text-slate-300", children: [
                 fuel.station,
-                " (",
+                " - ",
+                fuel.km,
+                "km (",
                 fuel.liters,
                 "L)"
-              ] }),
+              ] }) }),
               /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "flex items-center gap-3", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("span", { className: "text-sm font-medium text-white", children: formatCurrency3(fuel.totalAmount) }),
                 /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Button, { variant: "danger", onClick: () => handleRemoveFueling(fuel.id), className: "p-1 h-6 w-6 remove-btn", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(ICONS.trash, { className: "h-4 w-4" }) })
@@ -27490,10 +27516,12 @@ var TripDetails = ({ tripId, setView }) => {
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "md:col-span-1 space-y-4", children: [
           /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Card, { className: "bg-slate-900 printable-card", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)(Section, { title: "Informa\xE7\xF5es da Viagem", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "KM Rodados", value: `${totals.totalKm} km` }),
-            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "M\xE9dia de Consumo", value: totals.fuelEfficiency !== "N/A" ? `${totals.fuelEfficiency} km/L` : "N/A" }),
             /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "Data In\xEDcio", value: (/* @__PURE__ */ new Date(trip.startDate + "T00:00:00")).toLocaleDateString("pt-BR") }),
-            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "Data Fim", value: trip.endDate ? (/* @__PURE__ */ new Date(trip.endDate + "T00:00:00")).toLocaleDateString("pt-BR") : "N/A" })
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "Data Fim", value: trip.endDate ? (/* @__PURE__ */ new Date(trip.endDate + "T00:00:00")).toLocaleDateString("pt-BR") : "N/A" }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "KM Inicial", value: `${trip.startKm} km` }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "KM Final", value: trip.endKm > 0 ? `${trip.endKm} km` : "N/A" }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "KM Rodados", value: `${totals.totalKm} km` }),
+            /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(InfoItem, { label: "M\xE9dia de Consumo", value: totals.fuelEfficiency !== "N/A" ? `${totals.fuelEfficiency} km/L` : "N/A" })
           ] }) }) }),
           /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Card, { className: "bg-slate-900 printable-card", children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime21.jsx)(Section, { title: "Confirma\xE7\xE3o do Motorista", children: trip.signature?.confirmed ? /* @__PURE__ */ (0, import_jsx_runtime21.jsxs)("div", { className: "text-center p-4 bg-green-900/50 border border-green-700 rounded-lg", children: [
             /* @__PURE__ */ (0, import_jsx_runtime21.jsx)("p", { className: "font-bold text-green-400", children: "Acerto Confirmado" }),
@@ -27649,6 +27677,8 @@ var ActiveTripView = ({ trip: initialTrip, setView }) => {
           /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime22.jsx)("p", { className: "font-semibold text-white", children: f.station }),
             /* @__PURE__ */ (0, import_jsx_runtime22.jsxs)("p", { className: "text-sm text-slate-300", children: [
+              f.km,
+              "km - ",
               f.liters,
               "L - ",
               (/* @__PURE__ */ new Date(f.date + "T00:00:00")).toLocaleDateString("pt-BR")
