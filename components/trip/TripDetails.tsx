@@ -312,31 +312,31 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                                 </div>
 
                                 {/* Detailed Calculation Breakdown */}
-                                <div className="mt-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50 no-print">
-                                    <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <ICONS.info className="w-3 h-3" />
+                                <div className="mt-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50 print:mt-4 print:border-slate-300">
+                                    <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2 print:text-black">
+                                        <ICONS.info className="w-3 h-3 no-print" />
                                         Como foi calculado?
                                     </h4>
                                     <div className="space-y-2 text-xs">
-                                        <div className="flex justify-between items-center text-slate-300">
+                                        <div className="flex justify-between items-center text-slate-300 print:text-black">
                                             <span>(+) Total Frete (Receita)</span>
                                             <span className="font-medium">{formatCurrency(totals.totalFreight)}</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-red-400/80">
+                                        <div className="flex justify-between items-center text-red-400/80 print:text-black">
                                             <span>(-) Comissão Motorista ({trip.driverCommissionRate}%)</span>
                                             <span className="font-medium">{formatCurrency(totals.driverCommission)}</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-red-400/80">
+                                        <div className="flex justify-between items-center text-red-400/80 print:text-black">
                                             <span>(-) Combustível Total</span>
                                             <span className="font-medium">{formatCurrency(totals.totalFueling)}</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-red-400/80">
+                                        <div className="flex justify-between items-center text-red-400/80 print:text-black">
                                             <span>(-) Outras Despesas</span>
                                             <span className="font-medium">{formatCurrency(totals.totalOtherExpenses)}</span>
                                         </div>
-                                        <div className="pt-2 border-t border-slate-700 flex justify-between items-center font-bold text-sm text-white">
+                                        <div className="pt-2 border-t border-slate-700 print:border-black flex justify-between items-center font-bold text-sm text-white print:text-black">
                                             <span>(=) Resultado da Viagem</span>
-                                            <span className={totals.netBalance >= 0 ? 'text-green-400' : 'text-red-400'}>
+                                            <span className={totals.netBalance >= 0 ? 'text-green-400 print:text-black' : 'text-red-400 print:text-black'}>
                                                 {formatCurrency(totals.netBalance)}
                                             </span>
                                         </div>
