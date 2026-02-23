@@ -143,17 +143,92 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
             <style>
                 {`
                 @media print {
-                    #trip-details-header, #add-expense-section, #add-received-payment-section, .remove-btn, .no-print {
+                    #trip-details-header, #add-expense-section, #add-received-payment-section, .remove-btn, .no-print, #signature-action {
                         display: none !important;
                     }
                     .printable-card {
                         background-color: white !important;
                         box-shadow: none !important;
-                        border: 1px solid #e5e7eb;
+                        border: none !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        color: black !important;
+                    }
+                    .printable-card * {
+                        color: black !important;
+                        border-color: #ddd !important;
+                        background-color: transparent !important;
+                    }
+                    /* Headers */
+                    .print-header {
+                        display: block !important;
+                        text-align: center;
+                        margin-bottom: 20px;
+                        border-bottom: 2px solid #000;
+                        padding-bottom: 10px;
+                    }
+                    .print-header h1 {
+                        font-size: 20pt;
+                        font-bold: true;
+                        margin: 0;
+                    }
+                    .print-header p {
+                        font-size: 10pt;
+                        margin: 2px 0;
+                    }
+                    /* Sections */
+                    .print-section-title {
+                        font-size: 12pt !important;
+                        font-weight: bold !important;
+                        background-color: #f3f4f6 !important;
+                        padding: 4px 8px !important;
+                        margin-top: 15px !important;
+                        margin-bottom: 8px !important;
+                        border: 1px solid #ccc !important;
+                        color: black !important;
+                    }
+                    /* Tables */
+                    .print-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 10pt;
+                    }
+                    .print-table th, .print-table td {
+                        border: 1px solid #ddd;
+                        padding: 6px;
+                        text-align: left;
+                    }
+                    .print-table th {
+                        background-color: #f9fafb !important;
+                    }
+                    /* Totals */
+                    .print-total-row {
+                        font-weight: bold;
+                        font-size: 11pt;
+                    }
+                    .print-grand-total {
+                        font-size: 14pt !important;
+                        padding: 10px !important;
+                        border: 2px solid #000 !important;
+                        margin-top: 20px !important;
+                        text-align: center !important;
+                    }
+                    /* Grid adjustments */
+                    .card-content-grid {
+                        display: block !important;
+                    }
+                    .md\\:col-span-2, .md\\:col-span-1 {
+                        width: 100% !important;
+                    }
+                    /* Hide unnecessary gaps */
+                    .gap-6 {
+                        gap: 0 !important;
                     }
                 }
+                .print-header { display: none; }
                 `}
             </style>
+
             <div id="trip-details-header" className="flex justify-between items-center mb-4">
                 <Button onClick={() => setView({type: 'tripList'})}>
                     &larr; Voltar para Lista de Viagens
@@ -170,248 +245,235 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                 </div>
             </div>
 
-            <Card className="printable-card">
-                <CardHeader>
-                    <div className="flex justify-between items-start gap-4">
+            <Card className="printable-card overflow-hidden">
+                {/* Print Only Header */}
+                <div className="print-header">
+                    <h1>CENTRAL TRUCK</h1>
+                    <p>Comprovante de Acerto de Viagem</p>
+                    <p>Emissão: {new Date().toLocaleString('pt-BR')}</p>
+                </div>
+
+                <CardHeader className="border-b border-slate-700/50 pb-4">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex-1">
-                            <CardTitle>Acerto da Viagem: {trip.origin} para {trip.destination} {trip.monthlyTripNumber ? `(${trip.monthlyTripNumber}ª do Mês)` : ''}</CardTitle>
-                            <p className="text-slate-400 mt-1">{driver?.name} | {vehicle?.plate}</p>
+                            <CardTitle className="text-xl md:text-2xl">
+                                Acerto: {trip.origin} &larr;&rarr; {trip.destination}
+                            </CardTitle>
+                            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-slate-400 text-sm">
+                                <span className="flex items-center gap-1.5"><ICONS.driver className="w-4 h-4" /> {driver?.name}</span>
+                                <span className="flex items-center gap-1.5"><ICONS.truck className="w-4 h-4" /> {vehicle?.plate}</span>
+                                {trip.monthlyTripNumber && <span className="text-blue-400 font-semibold">{trip.monthlyTripNumber}ª Viagem do Mês</span>}
+                            </div>
+                        </div>
+                        <div className="hidden md:block text-right">
+                             <p className="text-xs text-slate-500">ID: {trip.id.slice(0,8)}</p>
+                             <div className={`mt-1 px-3 py-1 rounded-full text-xs font-bold inline-block ${trip.signature?.confirmed ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                                {trip.signature?.confirmed ? 'FINALIZADO' : 'EM ABERTO'}
+                             </div>
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="md:col-span-2 space-y-6">
-                        <Card className="bg-slate-900 printable-card">
-                             <CardContent>
-                                <Section title="Resumo Financeiro">
-                                    <InfoItem label="Total Frete (Receita)" value={totals.totalFreight} isCurrency />
-                                    <InfoItem label="Total Recebido" value={totals.totalReceived} isCurrency />
-                                    <div className="flex justify-between items-center py-2 text-sm">
-                                        <span className="text-slate-400">Saldo a Receber</span>
-                                        <span className={`font-medium ${totals.balanceToReceive > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(totals.balanceToReceive)}</span>
-                                    </div>
-                                    <hr className="border-slate-700 my-2" />
-                                    <InfoItem label="Total Combustível" value={totals.totalFueling} isCurrency />
-                                    <InfoItem label="Total Outras Despesas" value={totals.totalOtherExpenses} isCurrency />
-                                    <InfoItem label={`Comissão Motorista (${trip.driverCommissionRate}%)`} value={totals.driverCommission} isCurrency />
-                                    <hr className="border-slate-700 my-2" />
-                                    <div className="flex justify-between items-center py-2 text-lg">
-                                        <span className="font-bold text-slate-300">LUCRO LÍQUIDO DA VIAGEM</span>
-                                        <span className={`font-bold ${totals.netBalance >= 0 ? 'text-green-400' : 'text-red-400'}`}>{formatCurrency(totals.netBalance)}</span>
-                                    </div>
-                                     <p className="text-right text-xs text-slate-500 -mt-2">(Frete Bruto - Despesas - Comissão)</p>
-                                </Section>
-                            </CardContent>
-                        </Card>
 
-                        <Card className="bg-slate-900 printable-card">
-                            <CardContent>
-                                <Section title="Cargas da Viagem">
-                                    <div className="space-y-1">
-                                        {trip.cargo.length > 0 ? trip.cargo.map(cargo => (
-                                            <div key={cargo.id} className="flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md">
-                                                <div className="flex-1">
-                                                    <span className="text-sm text-slate-300">{cargo.type} - {cargo.weight}t × {formatCurrency(cargo.pricePerTon)}/t</span>
-                                                    {cargo.tax && cargo.tax > 0 && <span className="text-xs text-red-400 ml-2">(Imposto: -{formatCurrency(cargo.tax)})</span>}
-                                                </div>
-                                                <span className="text-sm font-medium text-white">{formatCurrency((cargo.weight * cargo.pricePerTon) - (cargo.tax || 0))}</span>
-                                            </div>
-                                        )) : <p className="text-sm text-slate-500 text-center py-2">Nenhuma carga registrada.</p>}
-                                    </div>
-                                    <hr className="border-slate-700 my-2" />
-                                    <InfoItem label="Total Frete Bruto" value={totals.totalFreight} isCurrency />
-                                </Section>
-                            </CardContent>
-                        </Card>
-
-                        {trip.trechos && trip.trechos.length > 0 && (
-                            <Card className="bg-slate-900 printable-card">
-                                <CardContent>
-                                    <Section title="Análise de Consumo por Trecho">
-                                        <div className="grid grid-cols-2 gap-4 mb-4">
-                                            <div className="bg-slate-800 p-3 rounded-lg">
-                                                <p className="text-xs text-slate-400 mb-1">KM Carregado</p>
-                                                <p className="text-2xl font-bold text-yellow-400">{totals.trechoMetrics.kmCarregado}</p>
-                                                <p className="text-xs text-slate-500">km</p>
-                                            </div>
-                                            <div className="bg-slate-800 p-3 rounded-lg">
-                                                <p className="text-xs text-slate-400 mb-1">KM Vazio</p>
-                                                <p className="text-2xl font-bold text-blue-400">{totals.trechoMetrics.kmVazio}</p>
-                                                <p className="text-xs text-slate-500">km</p>
-                                            </div>
-                                            <div className="bg-slate-800 p-3 rounded-lg">
-                                                <p className="text-xs text-slate-400 mb-1">Litros Carregado</p>
-                                                <p className="text-2xl font-bold text-yellow-300">{totals.trechoMetrics.litrosCarregado.toFixed(2)}</p>
-                                                <p className="text-xs text-slate-500">L</p>
-                                            </div>
-                                            <div className="bg-slate-800 p-3 rounded-lg">
-                                                <p className="text-xs text-slate-400 mb-1">Litros Vazio</p>
-                                                <p className="text-2xl font-bold text-blue-300">{totals.trechoMetrics.litrosVazio.toFixed(2)}</p>
-                                                <p className="text-xs text-slate-500">L</p>
-                                            </div>
-                                        </div>
-                                        <hr className="border-slate-700 my-4" />
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between items-center p-2 bg-slate-800/50 rounded">
-                                                <span className="text-sm font-medium text-yellow-300">Média Carregado</span>
-                                                <span className="text-lg font-bold text-yellow-300">{totals.trechoMetrics.mediaCarregado.toFixed(2)} km/l</span>
-                                            </div>
-                                            <div className="flex justify-between items-center p-2 bg-slate-800/50 rounded">
-                                                <span className="text-sm font-medium text-blue-300">Média Vazio</span>
-                                                <span className="text-lg font-bold text-blue-300">{totals.trechoMetrics.mediaVazio.toFixed(2)} km/l</span>
-                                            </div>
-                                            <div className="flex justify-between items-center p-2 bg-slate-800/50 rounded border border-green-500/30">
-                                                <span className="text-sm font-medium text-green-300">Média Geral</span>
-                                                <span className="text-lg font-bold text-green-300">{totals.trechoMetrics.mediaGeral.toFixed(2)} km/l</span>
-                                            </div>
-                                        </div>
-                                    </Section>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        <Card className="bg-slate-900 printable-card">
-                            <CardContent>
-                                <Section title="Controle de Recebimentos">
-                                     <div className="space-y-1 mb-4">
-                                        {trip.receivedPayments.length > 0 ? trip.receivedPayments.map(p => (
-                                            <div key={p.id} className="flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md">
-                                                <span className="text-sm text-slate-300">{p.type} ({p.method}) - {new Date(p.date + 'T00:00:00').toLocaleDateString('pt-BR')}</span>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-sm font-medium text-green-400">{formatCurrency(p.amount)}</span>
-                                                    <Button variant="danger" onClick={() => handleRemoveReceivedPayment(p.id)} className="p-1 h-6 w-6 remove-btn">
-                                                        <ICONS.trash className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        )) : <p className="text-sm text-slate-500 text-center py-2">Nenhum recebimento registrado.</p>}
-                                    </div>
-                                    <hr className="border-slate-700 my-2" />
-                                    <InfoItem label="Total Recebido" value={totals.totalReceived} isCurrency />
-                                    
-                                    <div id="add-received-payment-section" className="border-t border-slate-700 mt-4 pt-4">
-                                         <h4 className="text-md font-semibold text-white mb-2">Adicionar Recebimento</h4>
-                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <Select id="recType" label="Tipo" value={newReceivedPayment.type} onChange={e => setNewReceivedPayment(p => ({ ...p, type: e.target.value as ReceivedPaymentType }))}>
-                                                {RECEIVED_PAYMENT_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
-                                            </Select>
-                                            <Select id="recMethod" label="Forma Pgto." value={newReceivedPayment.method} onChange={e => setNewReceivedPayment(p => ({ ...p, method: e.target.value as PaymentMethod }))}>
-                                                {PAYMENT_METHODS.map(c => <option key={c} value={c}>{c}</option>)}
-                                            </Select>
-                                            <Input id="recDate" label="Data" type="date" value={newReceivedPayment.date} onChange={e => setNewReceivedPayment(p => ({ ...p, date: e.target.value }))} />
-                                            <Input id="recAmount" label="Valor (R$)" type="number" step="0.01" value={newReceivedPayment.amount || ''} onChange={e => setNewReceivedPayment(p => ({ ...p, amount: e.target.valueAsNumber || 0 }))} />
-                                        </div>
-                                        <Button onClick={handleAddReceivedPayment} className="mt-4 w-full" variant="secondary">Adicionar Recebimento</Button>
-                                    </div>
-                                </Section>
-                            </CardContent>
-                        </Card>
-
-
-                         <Card className="bg-slate-900 printable-card">
-                             <CardContent>
-                                <Section title="Detalhes dos Abastecimentos">
-                                    <div className="space-y-1">
-                                        {trip.fueling.length > 0 ? trip.fueling.map(fuel => (
-                                            <div key={fuel.id} className="flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md">
-                                                <div className="flex-1">
-                                                    <span className="text-sm text-slate-300">{fuel.station} - {fuel.km}km ({fuel.liters}L)</span>
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-sm font-medium text-white">{formatCurrency(fuel.totalAmount)}</span>
-                                                    <Button variant="danger" onClick={() => handleRemoveFueling(fuel.id)} className="p-1 h-6 w-6 remove-btn">
-                                                        <ICONS.trash className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        )) : <p className="text-sm text-slate-500 text-center py-2">Nenhum abastecimento registrado.</p>}
-                                    </div>
-                                    <hr className="border-slate-700 my-2" />
-                                    <InfoItem label="Total Combustível" value={totals.totalFueling} isCurrency />
-                                </Section>
-                             </CardContent>
-                        </Card>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 card-content-grid">
+                    <div className="md:col-span-2 space-y-8">
                         
-                        <Card className="bg-slate-900 printable-card">
-                             <CardContent>
-                                <Section title="Detalhes das Outras Despesas">
-                                    <div className="space-y-1">
-                                        {trip.expenses.length > 0 ? trip.expenses.map(exp => (
-                                            <div key={exp.id} className="flex justify-between items-center py-1.5 px-2 bg-slate-800/50 rounded-md">
-                                                <span className="text-sm text-slate-300">{exp.category}: {exp.description}</span>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-sm font-medium text-white">{formatCurrency(exp.amount)}</span>
-                                                    <Button variant="danger" onClick={() => handleRemoveExpense(exp.id)} className="p-1 h-6 w-6 remove-btn">
-                                                        <ICONS.trash className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        )) : <p className="text-sm text-slate-500 text-center py-2">Nenhuma outra despesa registrada.</p>}
+                        {/* Summary Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2 print-section-title">
+                                <ICONS.bank className="w-5 h-5 text-blue-400 no-print" /> 
+                                Resumo Financeiro
+                            </h3>
+                            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50 space-y-3">
+                                <InfoItem label="Total Frete (Receita Bruta)" value={totals.totalFreight} isCurrency />
+                                <InfoItem label="Total Recebido (Adiantamentos/Saldos)" value={totals.totalReceived} isCurrency />
+                                <div className="flex justify-between items-center py-2 text-sm border-t border-slate-700/50 mt-1">
+                                    <span className="text-slate-400 font-medium">Saldo pendente de recebimento</span>
+                                    <span className={`text-lg font-bold ${totals.balanceToReceive > 0 ? 'text-red-400' : 'text-green-400'}`}>{formatCurrency(totals.balanceToReceive)}</span>
+                                </div>
+                                <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-700/50">
+                                    <div className="p-3 bg-slate-900/50 rounded-lg">
+                                        <p className="text-xs text-slate-400 mb-1">Combustível</p>
+                                        <p className="text-sm font-semibold">{formatCurrency(totals.totalFueling)}</p>
                                     </div>
-                                    <hr className="border-slate-700 my-2" />
-                                    <InfoItem label="Total Outras Despesas" value={totals.totalOtherExpenses} isCurrency />
-                                </Section>
-                             </CardContent>
-                        </Card>
+                                    <div className="p-3 bg-slate-900/50 rounded-lg">
+                                        <p className="text-xs text-slate-400 mb-1">Outras Despesas</p>
+                                        <p className="text-sm font-semibold">{formatCurrency(totals.totalOtherExpenses)}</p>
+                                    </div>
+                                    <div className="p-3 bg-slate-900/50 rounded-lg">
+                                        <p className="text-xs text-slate-400 mb-1">Comissão ({trip.driverCommissionRate}%)</p>
+                                        <p className="text-sm font-semibold">{formatCurrency(totals.driverCommission)}</p>
+                                    </div>
+                                </div>
+                                <div className="pt-6 flex flex-col items-center justify-center bg-blue-600/10 border-2 border-blue-500/20 rounded-xl p-4 mt-2 print-grand-total">
+                                    <span className="text-xs text-blue-400 font-bold uppercase tracking-widest mb-1">Lucro Líquido da Operação</span>
+                                    <span className={`text-2xl font-black ${totals.netBalance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                        {formatCurrency(totals.netBalance)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-                        <Card id="add-expense-section" className="bg-slate-900 printable-card">
-                           <CardContent>
-                                <Section title="Adicionar Nova Despesa (Outras)">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <Select id="expCat" label="Categoria" value={newExpense.category} onChange={e => setNewExpense(p => ({ ...p, category: e.target.value as ExpenseCategory }))}>
-                                            {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                                        </Select>
-                                        <Input id="expDate" label="Data" type="date" value={newExpense.date} onChange={e => setNewExpense(p => ({ ...p, date: e.target.value }))} />
-                                        <AutocompleteInput 
-                                            id="expDesc" 
-                                            label="Descrição" 
-                                            value={newExpense.description} 
-                                            onChange={e => setNewExpense(p => ({ ...p, description: e.target.value.toUpperCase() }))}
-                                            suggestions={expenseDescSuggestions}
-                                        />
-                                        <Input id="expAmount" label="Valor (R$)" type="number" step="0.01" value={newExpense.amount || ''} onChange={e => setNewExpense(p => ({ ...p, amount: e.target.valueAsNumber || 0 }))} />
-                                    </div>
-                                    <Button onClick={handleAddExpense} className="mt-4 w-full" variant="secondary">Adicionar Despesa</Button>
-                                </Section>
-                           </CardContent>
-                        </Card>
+                        {/* Cargo Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2 print-section-title">
+                                <ICONS.trip className="w-5 h-5 text-blue-400 no-print" /> 
+                                Detalhamento de Cargas
+                            </h3>
+                            <table className="print-table w-full text-sm">
+                                <thead>
+                                    <tr className="bg-slate-800 text-slate-300 text-left">
+                                        <th className="p-3 rounded-tl-lg">Tipo da Carga</th>
+                                        <th className="p-3">Peso</th>
+                                        <th className="p-3">Valor/t</th>
+                                        <th className="p-3">Imposto</th>
+                                        <th className="p-3 text-right rounded-tr-lg">Total Líquido</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {trip.cargo.length > 0 ? trip.cargo.map(cargo => (
+                                        <tr key={cargo.id} className="border-b border-slate-700/50 hover:bg-slate-800/30">
+                                            <td className="p-3 text-white">{cargo.type}</td>
+                                            <td className="p-3">{cargo.weight}t</td>
+                                            <td className="p-3">{formatCurrency(cargo.pricePerTon)}</td>
+                                            <td className="p-3 text-red-400">{cargo.tax ? formatCurrency(cargo.tax) : '-'}</td>
+                                            <td className="p-3 text-right font-bold text-white">{formatCurrency((cargo.weight * cargo.pricePerTon) - (cargo.tax || 0))}</td>
+                                        </tr>
+                                    )) : (
+                                        <tr><td colSpan={5} className="p-6 text-center text-slate-500 italic">Nenhuma carga registrada</td></tr>
+                                    )}
+                                </tbody>
+                                <tfoot className="bg-slate-800/50 font-bold">
+                                    <tr>
+                                        <td colSpan={4} className="p-3 text-right text-slate-400">TOTAL FRETE:</td>
+                                        <td className="p-3 text-right text-green-400 text-lg">{formatCurrency(totals.totalFreight)}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        {/* Expenses Section */}
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <h3 className="text-md font-bold text-white flex items-center gap-2 print-section-title">Combustível</h3>
+                                <table className="print-table w-full text-xs">
+                                    <thead>
+                                        <tr className="text-left text-slate-400 border-b border-slate-700">
+                                            <th className="pb-2">Posto / Local</th>
+                                            <th className="pb-2">Litrarem</th>
+                                            <th className="pb-2 text-right">Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {trip.fueling.map(fuel => (
+                                            <tr key={fuel.id} className="border-b border-slate-800/50">
+                                                <td className="py-2 text-slate-300">
+                                                    <div className="font-medium text-white">{fuel.station}</div>
+                                                    <div className="text-[10px]">{fuel.km} km</div>
+                                                </td>
+                                                <td className="py-2">{fuel.liters} L</td>
+                                                <td className="py-2 text-right font-medium">{formatCurrency(fuel.totalAmount)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-md font-bold text-white flex items-center gap-2 print-section-title">Outras Despesas</h3>
+                                <table className="print-table w-full text-xs">
+                                    <thead>
+                                        <tr className="text-left text-slate-400 border-b border-slate-700">
+                                            <th className="pb-2">Descrição</th>
+                                            <th className="pb-2 text-right">Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {trip.expenses.map(exp => (
+                                            <tr key={exp.id} className="border-b border-slate-800/50">
+                                                <td className="py-2 text-slate-300">
+                                                    <div className="font-medium text-white">{exp.description}</div>
+                                                    <div className="text-[10px] uppercase text-slate-500">{exp.category}</div>
+                                                </td>
+                                                <td className="py-2 text-right font-medium">{formatCurrency(exp.amount)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Signatures for Print */}
+                        <div className="hidden print:grid grid-cols-2 gap-20 mt-20 pt-10 border-t border-slate-300">
+                            <div className="text-center">
+                                <div className="border-t border-black w-full mb-2"></div>
+                                <p className="text-sm font-bold">{driver?.name}</p>
+                                <p className="text-xs">Motorista</p>
+                            </div>
+                            <div className="text-center">
+                                <div className="border-t border-black w-full mb-2"></div>
+                                <p className="text-sm font-bold">CENTRAL TRUCK</p>
+                                <p className="text-xs">Responsável</p>
+                            </div>
+                        </div>
 
                     </div>
-                    <div className="md:col-span-1 space-y-4">
-                        <Card className="bg-slate-900 printable-card">
-                            <CardContent>
-                                <Section title="Informações da Viagem">
-                                    <InfoItem label="Data Início" value={new Date(trip.startDate + 'T00:00:00').toLocaleDateString('pt-BR')} />
-                                    <InfoItem label="Data Fim" value={trip.endDate ? new Date(trip.endDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'} />
-                                    <InfoItem label="KM Inicial" value={`${trip.startKm} km`} />
-                                    <InfoItem label="KM Final" value={trip.endKm > 0 ? `${trip.endKm} km` : 'N/A'} />
-                                    <InfoItem label="KM Rodados" value={`${totals.totalKm} km`} />
-                                    <InfoItem label="Média de Consumo" value={totals.fuelEfficiency !== 'N/A' ? `${totals.fuelEfficiency} km/L` : 'N/A'} />
-                                </Section>
-                            </CardContent>
-                        </Card>
 
-                        <Card className="bg-slate-900 printable-card">
-                            <CardContent>
-                                <Section title="Confirmação do Motorista">
-                                    {trip.signature?.confirmed ? (
-                                        <div className="text-center p-4 bg-green-900/50 border border-green-700 rounded-lg">
-                                            <p className="font-bold text-green-400">Acerto Confirmado</p>
-                                            <p className="text-sm text-slate-300">
-                                                em {new Date(trip.signature.date).toLocaleString('pt-BR')}
-                                            </p>
+                    {/* Sidebar Information */}
+                    <div className="space-y-6">
+                        <section className="bg-slate-800/30 rounded-xl p-5 border border-slate-700/50 space-y-4">
+                            <h3 className="text-sm font-bold text-blue-400 uppercase tracking-wider print-section-title">Dados da Viagem</h3>
+                            <div className="space-y-2">
+                                <InfoItem label="Início" value={new Date(trip.startDate + 'T00:00:00').toLocaleDateString('pt-BR')} />
+                                <InfoItem label="Fim" value={trip.endDate ? new Date(trip.endDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'Em curso'} />
+                                <hr className="border-slate-700/50 my-1" />
+                                <InfoItem label="KM Inicial" value={`${trip.startKm} km`} />
+                                <InfoItem label="KM Final" value={trip.endKm > 0 ? `${trip.endKm} km` : '-'} />
+                                <InfoItem label="KM Rodados" value={`${totals.totalKm} km`} />
+                                <hr className="border-slate-700/50 my-1" />
+                                <div className="flex justify-between items-center py-1">
+                                    <span className="text-xs text-slate-400">Média Geral</span>
+                                    <span className="text-md font-bold text-green-400">{totals.fuelEfficiency} km/L</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="bg-slate-800/30 rounded-xl p-5 border border-slate-700/50 space-y-4">
+                            <h3 className="text-sm font-bold text-blue-400 uppercase tracking-wider print-section-title">Pagamentos Recebidos</h3>
+                            <div className="space-y-1">
+                                {trip.receivedPayments.map(p => (
+                                    <div key={p.id} className="flex justify-between items-center py-2 border-b border-slate-700/30 last:border-0">
+                                        <div className="text-[11px]">
+                                            <div className="text-white font-medium">{p.type}</div>
+                                            <div className="text-slate-500">{p.method} | {new Date(p.date + 'T00:00:00').toLocaleDateString('pt-BR')}</div>
                                         </div>
-                                    ) : (
-                                        <div id="signature-action" className="text-center p-4">
-                                            <p className="text-slate-400 mb-4">Aguardando confirmação do motorista para finalizar o acerto.</p>
-                                            <Button onClick={handleSign} className="w-full no-print">
-                                                Confirmar Acerto
-                                            </Button>
-                                        </div>
-                                    )}
-                                </Section>
-                            </CardContent>
-                        </Card>
+                                        <span className="text-sm font-bold text-green-400">{formatCurrency(p.amount)}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div id="add-received-payment-section" className="pt-4 border-t border-slate-700">
+                                <Button variant="secondary" className="w-full text-xs py-1 h-auto" onClick={() => setView({type: 'viewTrip', tripId: trip.id})}>
+                                    Gerenciar Recebimentos
+                                </Button>
+                            </div>
+                        </section>
+
+                        <section className="bg-slate-800/30 rounded-xl p-5 border border-slate-700/50 space-y-4 no-print">
+                            <h3 className="text-sm font-bold text-blue-400 uppercase tracking-wider">Status do Acerto</h3>
+                            {trip.signature?.confirmed ? (
+                                <div className="text-center p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                    <p className="font-bold text-green-400 text-sm">Confirmado</p>
+                                    <p className="text-[10px] text-slate-400 mt-1">
+                                        {new Date(trip.signature.date).toLocaleString('pt-BR')}
+                                    </p>
+                                </div>
+                            ) : (
+                                <div id="signature-action" className="text-center">
+                                    <Button onClick={handleSign} className="w-full text-sm">
+                                        Confirmar Acerto
+                                    </Button>
+                                </div>
+                            )}
+                        </section>
                     </div>
                 </CardContent>
             </Card>
