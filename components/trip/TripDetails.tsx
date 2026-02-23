@@ -310,6 +310,38 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                                         {formatCurrency(totals.netBalance)}
                                     </span>
                                 </div>
+
+                                {/* Detailed Calculation Breakdown */}
+                                <div className="mt-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50 no-print">
+                                    <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <ICONS.info className="w-3 h-3" />
+                                        Como foi calculado?
+                                    </h4>
+                                    <div className="space-y-2 text-xs">
+                                        <div className="flex justify-between items-center text-slate-300">
+                                            <span>(+) Total Frete (Receita)</span>
+                                            <span className="font-medium">{formatCurrency(totals.totalFreight)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-red-400/80">
+                                            <span>(-) Comissão Motorista ({trip.driverCommissionRate}%)</span>
+                                            <span className="font-medium">{formatCurrency(totals.driverCommission)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-red-400/80">
+                                            <span>(-) Combustível Total</span>
+                                            <span className="font-medium">{formatCurrency(totals.totalFueling)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-red-400/80">
+                                            <span>(-) Outras Despesas</span>
+                                            <span className="font-medium">{formatCurrency(totals.totalOtherExpenses)}</span>
+                                        </div>
+                                        <div className="pt-2 border-t border-slate-700 flex justify-between items-center font-bold text-sm text-white">
+                                            <span>(=) Resultado da Viagem</span>
+                                            <span className={totals.netBalance >= 0 ? 'text-green-400' : 'text-red-400'}>
+                                                {formatCurrency(totals.netBalance)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
