@@ -1,0 +1,17 @@
+{
+  "name": "Central Truck",
+  "short_name": "CentralTruck",
+  "description": "Sistema de Gestão de Fretes e Operações",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

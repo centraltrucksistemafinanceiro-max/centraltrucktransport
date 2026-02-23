@@ -5,7 +5,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|dist/|favicon|sw\\.js|manifest\\.json).*)",
       "destination": "/index.html"
     }
   ]
