@@ -90,16 +90,16 @@ export const LoginScreen: React.FC = () => {
                             <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_25%,rgba(255,255,255,.1)_50%,transparent_50%,transparent_75%,rgba(255,255,255,.1)_75%,rgba(255,255,255,.1))] bg-[length:40px_40px]"></div>
                         </div>
 
-                        {/* Truck icon/Logo in header */}
+                        {/* Logo in header - No circle */}
                         <div className="relative z-10 flex flex-col items-center">
-                            <div className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-2 shadow-2xl overflow-hidden">
-                                <img src="assets/logo.png" alt="Logo" className="w-16 h-16 object-contain" onError={(e) => {
+                            <div className="flex items-center justify-center mb-2 overflow-hidden">
+                                <img src="assets/logo.png" alt="Logo" className="w-48 h-24 object-contain" onError={(e) => {
                                     e.currentTarget.style.display = 'none';
                                     const fallback = document.getElementById('fallback-icon');
                                     if (fallback) fallback.style.opacity = '1';
                                 }} />
                                 <div id="fallback-icon" className="transition-opacity duration-300 opacity-0 absolute">
-                                    <ICONS.trip className="w-10 h-10 text-white" />
+                                    <ICONS.trip className="w-12 h-12 text-white" />
                                 </div>
                             </div>
                         </div>
