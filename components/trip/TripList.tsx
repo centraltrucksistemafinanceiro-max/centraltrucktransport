@@ -28,11 +28,14 @@ export const TripList: React.FC<TripListProps> = ({ setView }) => {
   const { trips, getDriver, getVehicle } = useTrips();
   const { currentDriverId } = useSession();
   
+  const today = new Date();
+  const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
   // Filter states
-  const [filterType, setFilterType] = useState<'all' | 'date' | 'month'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'date' | 'month'>('month');
   const [selectedDate, setSelectedDate] = useState<string>('');
-  const [startMonth, setStartMonth] = useState<string>('');
-  const [endMonth, setEndMonth] = useState<string>('');
+  const [startMonth, setStartMonth] = useState<string>(currentMonthStr);
+  const [endMonth, setEndMonth] = useState<string>(currentMonthStr);
 
   const displayedTrips = currentDriverId
     ? trips.filter(trip => trip.driverId === currentDriverId)

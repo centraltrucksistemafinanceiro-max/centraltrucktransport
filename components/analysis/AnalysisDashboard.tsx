@@ -32,7 +32,7 @@ export const AnalysisDashboard: React.FC = () => {
     const formatToMonthString = (date: Date) => `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
 
     const [selectedVehicleId, setSelectedVehicleId] = useState<string>(''); // '' means all
-    const [startDate, setStartDate] = useState<string>(formatToMonthString(startOfYear));
+    const [startDate, setStartDate] = useState<string>(formatToMonthString(today));
     const [endDate, setEndDate] = useState<string>(formatToMonthString(today));
 
     const [lineTooltip, setLineTooltip] = useState<{ visible: boolean; data: any; x: number; y: number } | null>(null);
