@@ -381,10 +381,12 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                         <Card className="bg-slate-900 printable-card">
                             <CardContent>
                                 <Section title="Informações da Viagem">
-                                    <InfoItem label="KM Rodados" value={`${totals.totalKm} km`} />
-                                    <InfoItem label="Média de Consumo" value={totals.fuelEfficiency !== 'N/A' ? `${totals.fuelEfficiency} km/L` : 'N/A'} />
                                     <InfoItem label="Data Início" value={new Date(trip.startDate + 'T00:00:00').toLocaleDateString('pt-BR')} />
                                     <InfoItem label="Data Fim" value={trip.endDate ? new Date(trip.endDate + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'} />
+                                    <InfoItem label="KM Inicial" value={`${trip.startKm} km`} />
+                                    <InfoItem label="KM Final" value={trip.endKm > 0 ? `${trip.endKm} km` : 'N/A'} />
+                                    <InfoItem label="KM Rodados" value={`${totals.totalKm} km`} />
+                                    <InfoItem label="Média de Consumo" value={totals.fuelEfficiency !== 'N/A' ? `${totals.fuelEfficiency} km/L` : 'N/A'} />
                                 </Section>
                             </CardContent>
                         </Card>
