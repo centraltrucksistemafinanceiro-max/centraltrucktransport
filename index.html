@@ -2,10 +2,10 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="assets/logo.png" type="image/png" />
-    <link rel="apple-touch-icon" href="assets/logo.png" />
-    <link rel="shortcut icon" href="assets/logo.png" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="assets/logo.png?v=1.0" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/logo.png?v=1.0" />
+    <link rel="shortcut icon" href="assets/logo.png?v=1.0" />
+    <link rel="manifest" href="manifest.json?v=1.0" />
     <meta name="theme-color" content="#0f172a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -15,9 +15,20 @@
     <title>Sistema de Controle de Viagem</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+      const VERSION = '1.0.' + Date.now();
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js');
+          navigator.serviceWorker.register('/sw.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New update available, force reload
+                  window.location.reload();
+                }
+              });
+            });
+          });
         });
       }
     </script>
@@ -70,6 +81,6 @@
     <!-- Runtime configuration (edit values in runtime-config.js) -->
     <script src="./runtime-config.js"></script>
 
-    <script type="module" src="./dist/bundle.js"></script>
+    <script type="module" src="./dist/bundle.js?v=recent"></script>
   </body>
 </html>
