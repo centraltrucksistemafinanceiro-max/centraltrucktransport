@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Uma plataforma web moderna e completa para gestão e controle de operações de transporte rodoviário de carga.",
   "scripts": {
-    "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --minify --sourcemap",
-    "dev": "esbuild index.tsx --bundle --outfile=dist/bundle.js --format=esm --platform=browser --servedir=. --serve=localhost:5173 --sourcemap",
+    "build": "esbuild index.tsx --bundle --outfile=public/dist/bundle.js --format=esm --platform=browser --minify --sourcemap",
+    "dev": "esbuild index.tsx --bundle --outfile=public/dist/bundle.js --format=esm --platform=browser --servedir=public --serve=localhost:5173 --sourcemap",
     "start": "npm run dev"
   },
   "keywords": [],
