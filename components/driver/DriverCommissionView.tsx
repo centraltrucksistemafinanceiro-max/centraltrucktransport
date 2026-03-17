@@ -43,10 +43,21 @@ export const DriverCommissionView: React.FC = () => {
     const driverId = session.user?.driverId;
 
     const commissionData = useMemo(() => {
-        if (!driverId) return { totalCommission: 0, totalGrossRevenue: 0, tripCount: 0, monthlyTrips: [] };
+        if (!driverId) return { 
+            totalCommission: 0, 
+            totalGrossRevenue: 0, 
+            tripCount: 0, 
+            monthlyTrips: [],
+            monthsCount: 1,
+            avgGross: 0,
+            avgCommission: 0
+        };
 
         const [startYear, startMonth] = startDate.split('-').map(Number);
         const [endYear, endMonth] = endDate.split('-').map(Number);
+
+        // Quantidade de meses selecionados
+        const monthsCount = Math.max(1, (endYear - startYear) * 12 + (endMonth - startMonth) + 1);
 
         // Convert to comparable numbers (YYYYMM)
         const startVal = startYear * 100 + startMonth;
@@ -79,6 +90,9 @@ export const DriverCommissionView: React.FC = () => {
             totalGrossRevenue,
             tripCount: monthlyTrips.length,
             monthlyTrips,
+            monthsCount,
+            avgGross: totalGrossRevenue / monthsCount,
+            avgCommission: totalCommission / monthsCount,
         };
     }, [startDate, endDate, trips, driverId]);
 
@@ -128,24 +142,47 @@ export const DriverCommissionView: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard 
-                    label="Faturamento Bruto" 
+                    label={commissionData.monthsCount > 1 ? "Faturamento Bruto Total" : "Faturamento Bruto"}
                     value={formatCurrency(commissionData.totalGrossRevenue)} 
                     icon={<ICONS.truck className="w-8 h-8" />}
                     className="border-yellow-500/20"
                 />
                 <StatCard 
-                    label="Minha Comissão" 
+                    label={commissionData.monthsCount > 1 ? "Minha Comissão Total" : "Minha Comissão"}
                     value={formatCurrency(commissionData.totalCommission)} 
                     icon={<ICONS.currencyDollar className="w-8 h-8" />}
                     className="border-blue-500/20"
                 />
                 <StatCard 
-                    label="Viagens No Mês" 
+                    label="Viagens No Período" 
                     value={commissionData.tripCount.toString()} 
                     icon={<ICONS.trip className="w-8 h-8" />}
                     className="border-green-500/20"
                 />
             </div>
+
+            {commissionData.monthsCount > 1 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-slate-800/40 p-4 rounded-xl border border-blue-500/10 flex justify-between items-center">
+                        <div>
+                            <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Média Bruta Mensal ({commissionData.monthsCount} meses)</p>
+                            <p className="text-xl font-bold text-white mt-1">{formatCurrency(commissionData.avgGross)}</p>
+                        </div>
+                        <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
+                            <ICONS.calendar className="w-5 h-5" />
+                        </div>
+                    </div>
+                    <div className="bg-slate-800/40 p-4 rounded-xl border border-green-500/10 flex justify-between items-center">
+                        <div>
+                            <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Média de Comissão Mensal</p>
+                            <p className="text-xl font-bold text-green-400 mt-1">{formatCurrency(commissionData.avgCommission)}</p>
+                        </div>
+                        <div className="p-2 bg-green-500/10 rounded-lg text-green-400">
+                            <ICONS.currencyDollar className="w-5 h-5" />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Card className="border-slate-700/50 shadow-xl overflow-hidden">
                 <CardHeader className="bg-slate-800/30 border-b border-slate-700/50">
