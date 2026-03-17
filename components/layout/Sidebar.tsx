@@ -88,6 +88,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setView, isOpen, 
               isActive={currentView.type === 'tripList' || currentView.type === 'newTrip' || currentView.type === 'editTrip' || currentView.type === 'viewTrip' || currentView.type === 'activeTrip'}
               onClick={() => handleItemClick({ type: 'tripList' })}
             />
+            {session.user?.role === 'driver' && (
+              <NavItem
+                icon={<ICONS.currencyDollar />}
+                label="Minhas Comissões"
+                isActive={currentView.type === 'driverCommission'}
+                onClick={() => handleItemClick({ type: 'driverCommission' })}
+              />
+            )}
             {isAdmin && (
               <>
                 <NavItem

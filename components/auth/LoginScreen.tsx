@@ -11,6 +11,7 @@ export const LoginScreen: React.FC = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [focusedField, setFocusedField] = useState<'username' | 'password' | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
     const { login } = useSession();
 
     useEffect(() => {
@@ -141,19 +142,32 @@ export const LoginScreen: React.FC = () => {
 
                             {/* Password input */}
                             <div className="relative group">
-                                <Input
-                                    id="password"
-                                    label="Senha"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    onFocus={() => setFocusedField('password')}
-                                    onBlur={() => setFocusedField(null)}
-                                    required
-                                    autoComplete="current-password"
-                                    placeholder="••••••••"
-                                    className="bg-white/5 border border-white/10 text-white placeholder:text-slate-500"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        label="Senha"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        onFocus={() => setFocusedField('password')}
+                                        onBlur={() => setFocusedField(null)}
+                                        required
+                                        autoComplete="current-password"
+                                        placeholder="••••••••"
+                                        className="bg-white/5 border border-white/10 text-white placeholder:text-slate-500 pr-12 w-full"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-0 bottom-0 top-[22px] px-3 flex items-center text-slate-400 hover:text-white transition-colors focus:outline-none"
+                                    >
+                                        {showPassword ? (
+                                            <ICONS.eyeOff className="w-5 h-5" />
+                                        ) : (
+                                            <ICONS.eye className="w-5 h-5" />
+                                        )}
+                                    </button>
+                                </div>
                                 {focusedField === 'password' && (
                                     <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
                                 )}

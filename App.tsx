@@ -20,6 +20,7 @@ import { LoginScreen } from './components/auth/LoginScreen';
 import { Trip } from './types';
 import { ProfileSettings } from './components/profile/ProfileSettings';
 import { AnalysisDashboard } from './components/analysis/AnalysisDashboard';
+import { DriverCommissionView } from './components/driver/DriverCommissionView';
 
 export type View =
   | { type: 'dashboard' }
@@ -34,6 +35,7 @@ export type View =
   | { type: 'accountsPayable' }
   | { type: 'billing' }
   | { type: 'analysis' }
+  | { type: 'driverCommission' }
   | { type: 'profileSettings' };
 
 const MainContent: React.FC<{ view: View; setView: (view: View) => void }> = ({ view, setView }) => {
@@ -58,6 +60,8 @@ const MainContent: React.FC<{ view: View; setView: (view: View) => void }> = ({ 
         return <AnalysisDashboard />;
     case 'newTrip':
       return <TripForm setView={setView} />;
+    case 'driverCommission':
+        return <DriverCommissionView />;
     case 'editTrip': {
         const tripToEdit = getTrip(view.tripId);
         if (!tripToEdit) {
