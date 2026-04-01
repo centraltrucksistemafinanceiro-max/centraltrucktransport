@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTrips } from '../../context/TripContext';
 import { useSession } from '../../context/SessionContext';
+import { useNotification } from '../../context/NotificationContext';
 import { TripStatus } from '../../types';
 import type { View } from '../../App';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
@@ -25,8 +26,9 @@ const getStatusClass = (status: TripStatus) => {
 };
 
 export const TripList: React.FC<TripListProps> = ({ setView }) => {
-  const { trips, getDriver, getVehicle } = useTrips();
+  const { trips, getDriver, getVehicle, deleteTrip } = useTrips();
   const { currentDriverId } = useSession();
+  const { showNotification } = useNotification();
   
   const today = new Date();
   const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
@@ -59,6 +61,18 @@ export const TripList: React.FC<TripListProps> = ({ setView }) => {
     setSelectedDate('');
     setStartMonth('');
     setEndMonth('');
+  };
+
+  const handleDeleteTrip = async (tripId: string) => {
+    if (window.confirm("Certeza absoluta que deseja excluir esta viagem? Esta ação não pode ser desfeita e removerá todos os dados financeiros vinculados.")) {
+      try {
+        await deleteTrip(tripId);
+        showNotification('Viagem excluída com sucesso.', 'success');
+      } catch (error) {
+        console.error("Erro ao excluir viagem:", error);
+        showNotification('Erro ao excluir viagem.', 'error');
+      }
+    }
   };
 
   return (
@@ -195,6 +209,9 @@ export const TripList: React.FC<TripListProps> = ({ setView }) => {
                      </Button>
                      <Button variant="secondary" onClick={() => setView({ type: 'viewTrip', tripId: trip.id })}>
                       Ver Detalhes
+                     </Button>
+                     <Button variant="danger" onClick={() => handleDeleteTrip(trip.id)} title="Excluir">
+                       <ICONS.trash className="w-4 h-4" />
                      </Button>
                    </div>
                 </div>

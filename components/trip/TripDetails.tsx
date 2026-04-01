@@ -47,7 +47,7 @@ const calculateTotals = (trip: Trip) => {
 }
 
 export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => void }> = ({ tripId, setView }) => {
-    const { trips, getTrip, getDriver, getVehicle, updateTrip } = useTrips();
+    const { trips, getTrip, getDriver, getVehicle, updateTrip, deleteTrip } = useTrips();
     const { showNotification } = useNotification();
     const trip = getTrip(tripId);
     const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
@@ -136,6 +136,19 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
             },
         };
         await updateTrip(signedTrip);
+    };
+
+    const handleDeleteTrip = async () => {
+        if (window.confirm("Certeza absoluta que deseja excluir esta viagem? Esta ação não pode ser desfeita e removerá todos os dados financeiros vinculados.")) {
+            try {
+                await deleteTrip(trip.id);
+                showNotification('Viagem excluída com sucesso.', 'success');
+                setView({type: 'tripList'});
+            } catch (error) {
+                console.error("Erro ao excluir viagem:", error);
+                showNotification('Erro ao excluir viagem.', 'error');
+            }
+        }
     };
 
     return (
@@ -233,7 +246,7 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                 <Button onClick={() => setView({type: 'tripList'})}>
                     &larr; Voltar para Lista de Viagens
                 </Button>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap justify-end">
                     <Button onClick={() => setView({ type: 'editTrip', tripId: trip.id })} variant="secondary">
                         <ICONS.pencil className="w-4 h-4 mr-2" />
                         Editar Viagem
@@ -241,6 +254,10 @@ export const TripDetails: React.FC<{ tripId: string, setView: (view: any) => voi
                     <Button onClick={() => window.print()} variant="secondary">
                         <ICONS.printer className="w-4 h-4 mr-2" />
                         Imprimir Acerto
+                    </Button>
+                    <Button onClick={handleDeleteTrip} variant="danger">
+                        <ICONS.trash className="w-4 h-4 mr-2" />
+                        Excluir
                     </Button>
                 </div>
             </div>

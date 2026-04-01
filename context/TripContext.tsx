@@ -18,6 +18,7 @@ interface TripContextType {
   isLoading: boolean;
   addTrip: (trip: Omit<Trip, 'id' | 'createdAt'>) => Promise<void>;
   updateTrip: (trip: Trip) => Promise<void>;
+  deleteTrip: (tripId: string) => Promise<void>;
   getTrip: (id: string) => Trip | undefined;
   addDriver: (driver: AddDriverInput) => Promise<void>;
   updateDriver: (driver: Driver) => Promise<void>;
@@ -140,6 +141,11 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const db = getFirebaseDb();
     const { id, ...tripData } = updatedTrip;
     await db.collection('trips').doc(id).update(tripData);
+  };
+
+  const deleteTrip = async (tripId: string) => {
+    const db = getFirebaseDb();
+    await db.collection('trips').doc(tripId).delete();
   };
 
   const getTrip = (id: string) => trips.find(t => t.id === id);
@@ -266,7 +272,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return (
     <TripContext.Provider value={{ 
         trips, drivers, vehicles, admins, fixedExpenses, workshopExpenses, isLoading,
-        addTrip, updateTrip, getTrip, 
+        addTrip, updateTrip, deleteTrip, getTrip, 
         addDriver, updateDriver, deleteDriver,
         addVehicle, updateVehicle, deleteVehicle,
         getDriver, getVehicle,
