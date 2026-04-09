@@ -59,15 +59,22 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
     
     // Cargo Management
     const [currentCargo, setCurrentCargo] = useState<Omit<Cargo, 'id'>>({ type: '', weight: 0, pricePerTon: 0, tax: 0 });
+    const [totalCargoValue, setTotalCargoValue] = useState<number>(0);
     const handleAddCargo = () => {
         if (currentCargo.type && currentCargo.weight > 0 && currentCargo.pricePerTon > 0) {
             setTrip(prev => ({ ...prev, cargo: [...prev.cargo, { ...currentCargo, id: '' + Math.random() }] }));
             setCurrentCargo({ type: '', weight: 0, pricePerTon: 0, tax: 0 });
+            setTotalCargoValue(0);
         }
     };
     const handleRemoveCargo = (id: string) => {
         setTrip(prev => ({...prev, cargo: prev.cargo.filter(c => c.id !== id)}))
     }
+    const handleEditCargo = (c: Cargo) => {
+        setCurrentCargo({ type: c.type, weight: c.weight, pricePerTon: c.pricePerTon, tax: c.tax });
+        setTotalCargoValue(c.weight * c.pricePerTon);
+        handleRemoveCargo(c.id);
+    };
 
     // Received Payments Management
     const [currentReceivedPayment, setCurrentReceivedPayment] = useState<Omit<ReceivedPayment, 'id'>>({ type: ReceivedPaymentType.ADVANCE, method: PaymentMethod.PIX, amount: 0, date: today });
@@ -104,6 +111,10 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
     const handleRemoveFueling = (id: string) => {
         setTrip(prev => ({...prev, fueling: prev.fueling.filter(f => f.id !== id)}))
     }
+    const handleEditFueling = (f: Fueling) => {
+        setCurrentFueling({ station: f.station, date: f.date, km: f.km, liters: f.liters, totalAmount: f.totalAmount, paymentMethod: f.paymentMethod });
+        handleRemoveFueling(f.id);
+    };
 
     // Expense Management
     const [currentExpense, setCurrentExpense] = useState<Omit<Expense, 'id'>>({ category: ExpenseCategory.OTHER, description: '', amount: 0, date: today });
@@ -115,6 +126,10 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
     };
      const handleRemoveExpense = (id: string) => {
         setTrip(prev => ({...prev, expenses: prev.expenses.filter(e => e.id !== id)}))
+    }
+    const handleEditExpense = (e: Expense) => {
+        setCurrentExpense({ category: e.category, description: e.description, amount: e.amount, date: e.date });
+        handleRemoveExpense(e.id);
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -174,7 +189,7 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
         <form onSubmit={handleSubmit} className="space-y-6">
             <Card>
                 <CardHeader><CardTitle>{existingTrip ? 'Editar Viagem' : 'Criar Nova Viagem'}</CardTitle></CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Select id="driverId" name="driverId" label="Motorista" value={trip.driverId} onChange={handleInputChange} required disabled={!!currentDriverId}>
                         <option value="">Selecione...</option>
                         {availableDrivers.map(d => <option key={d.id} value={d.id}>{d.name} {d.status === 'inactive' ? '(Inativo)' : ''}</option>)}
@@ -189,10 +204,14 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                     <Input id="endDate" name="endDate" label="Data Fim" type="date" value={trip.endDate || ''} onChange={handleInputChange} />
                     <Input id="startKm" name="startKm" label="KM Inicial" type="number" step="any" value={trip.startKm || ''} onChange={e => setTrip(p => ({...p, startKm: e.target.valueAsNumber || 0}))} required />
                     <Input id="endKm" name="endKm" label="KM Final" type="number" step="any" value={trip.endKm || ''} onChange={e => setTrip(p => ({...p, endKm: e.target.valueAsNumber || 0}))} />
-                    <Select id="status" name="status" label="Status" value={trip.status} onChange={handleInputChange}>
-                       {Object.values(TripStatus).map(s => <option key={s} value={s}>{s}</option>)}
-                    </Select>
-                    <Input id="driverCommissionRate" name="driverCommissionRate" label="Comissão Motorista (%)" type="number" step="any" value={trip.driverCommissionRate || ''} onChange={e => setTrip(p => ({...p, driverCommissionRate: e.target.valueAsNumber || 0}))} required />
+                    <div className="sm:col-span-2">
+                        <Select id="status" name="status" label="Status" value={trip.status} onChange={handleInputChange}>
+                            {Object.values(TripStatus).map(s => <option key={s} value={s}>{s}</option>)}
+                        </Select>
+                    </div>
+                    <div className="sm:col-span-2">
+                        <Input id="driverCommissionRate" name="driverCommissionRate" label="Comissão Motorista (%)" type="number" step="any" value={trip.driverCommissionRate || ''} onChange={e => setTrip(p => ({...p, driverCommissionRate: e.target.valueAsNumber || 0}))} required />
+                    </div>
                 </CardContent>
             </Card>
 
@@ -209,7 +228,10 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                                 </span>
                                 {t.observacoes && <p className="text-xs text-slate-400 mt-1">{t.observacoes}</p>}
                             </div>
-                            <Button type="button" variant="danger" onClick={() => handleRemoveTrecho(t.id)} className="p-1 h-7 w-7"><ICONS.trash className="h-4 w-4"/></Button>
+                            <Button type="button" variant="danger" onClick={() => handleRemoveTrecho(t.id)} className="p-2 h-9">
+                                <ICONS.trash className="h-4 w-4 mr-1"/>
+                                <span className="text-xs">Excluir</span>
+                            </Button>
                         </div>
                     ))}
                     </div>
@@ -239,7 +261,7 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                         </div>
                     )}
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-slate-700 pt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-t border-slate-700 pt-4">
                         <Select id="trechoStatus" label="Tipo" value={currentTrecho.status} onChange={e => setCurrentTrecho(p => ({...p, status: e.target.value as TrechoStatus}))}>
                             {Object.values(TrechoStatus).map(s => <option key={s} value={s}>{s}</option>)}
                         </Select>
@@ -264,8 +286,15 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                                  {c.tax && c.tax > 0 && <span className="text-xs text-red-400 ml-2">(-{formatCurrency(c.tax)} imposto)</span>}
                                </div>
                                <div className="flex items-center gap-2">
-                                <span className="font-bold">{formatCurrency((c.weight * c.pricePerTon) - (c.tax || 0))}</span>
-                                <Button type="button" variant="danger" onClick={() => handleRemoveCargo(c.id)} className="p-1 h-7 w-7"><ICONS.trash className="h-4 w-4"/></Button>
+                                <span className="font-bold mr-2">{formatCurrency((c.weight * c.pricePerTon) - (c.tax || 0))}</span>
+                                <Button type="button" variant="secondary" onClick={() => handleEditCargo(c as Cargo)} className="p-2 h-9">
+                                    <ICONS.pencil className="h-4 w-4 mr-1"/>
+                                    <span className="text-xs">Editar</span>
+                                </Button>
+                                <Button type="button" variant="danger" onClick={() => handleRemoveCargo(c.id)} className="p-2 h-9">
+                                    <ICONS.trash className="h-4 w-4 mr-1"/>
+                                    <span className="text-xs">Excluir</span>
+                                </Button>
                                </div>
                            </div>
                         ))}
@@ -281,11 +310,43 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-slate-700 pt-4">
-                            <AutocompleteInput id="cargoType" label="Tipo" value={currentCargo.type} onChange={e => setCurrentCargo(p => ({...p, type: e.target.value.toUpperCase()}))} suggestions={cargoTypeSuggestions} />
-                            <Input id="cargoWeight" label="Peso (t)" type="number" step="any" value={currentCargo.weight || ''} onChange={e => setCurrentCargo(p => ({...p, weight: e.target.valueAsNumber || 0}))}/>
-                            <Input id="cargoPrice" label="Valor/t" type="number" step="0.01" value={currentCargo.pricePerTon || ''} onChange={e => setCurrentCargo(p => ({...p, pricePerTon: e.target.valueAsNumber || 0}))}/>
-                            <Input id="cargoTax" label="Imposto (R$)" type="number" step="0.01" value={currentCargo.tax || ''} onChange={e => setCurrentCargo(p => ({...p, tax: e.target.valueAsNumber || 0}))}/>
+                        <div className="grid grid-cols-1 sm:grid-cols-6 gap-4 border-t border-slate-700 pt-4">
+                            <div className="sm:col-span-2">
+                                <AutocompleteInput id="cargoType" label="Tipo" value={currentCargo.type} onChange={e => setCurrentCargo(p => ({...p, type: e.target.value.toUpperCase()}))} suggestions={cargoTypeSuggestions} />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <Input id="cargoWeight" label="Peso (t)" type="number" step="any" value={currentCargo.weight || ''} 
+                                    onChange={e => {
+                                        const val = e.target.valueAsNumber || 0;
+                                        setCurrentCargo(p => ({...p, weight: val, pricePerTon: totalCargoValue > 0 && val > 0 ? totalCargoValue / val : p.pricePerTon}));
+                                    }}
+                                />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <Input id="cargoTotalValue" label="Valor Total (R$)" type="number" step="0.01" value={totalCargoValue || ''} 
+                                    onChange={e => {
+                                        const val = e.target.valueAsNumber || 0;
+                                        setTotalCargoValue(val);
+                                        if (currentCargo.weight > 0 && val > 0) {
+                                            setCurrentCargo(p => ({...p, pricePerTon: val / p.weight}));
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div className="sm:col-span-3">
+                                <Input id="cargoPrice" label="Valor/t" type="number" step="0.01" value={currentCargo.pricePerTon || ''} 
+                                    onChange={e => {
+                                        const val = e.target.valueAsNumber || 0;
+                                        setCurrentCargo(p => ({...p, pricePerTon: val}));
+                                        if (currentCargo.weight > 0 && val > 0) {
+                                            setTotalCargoValue(val * currentCargo.weight);
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div className="sm:col-span-3">
+                                <Input id="cargoTax" label="Imposto (R$)" type="number" step="0.01" value={currentCargo.tax || ''} onChange={e => setCurrentCargo(p => ({...p, tax: e.target.valueAsNumber || 0}))}/>
+                            </div>
                         </div>
                         <Button type="button" variant="secondary" onClick={handleAddCargo} className="mt-2 w-full">Adicionar Carga</Button>
                     </CardContent>
@@ -301,7 +362,10 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                                <span>{p.type}: {p.method}</span>
                                <div className="flex items-center gap-2">
                                 <span className="font-bold text-green-400">{formatCurrency(p.amount)}</span>
-                                <Button type="button" variant="danger" onClick={() => handleRemoveReceivedPayment(p.id)} className="p-1 h-7 w-7"><ICONS.trash className="h-4 w-4"/></Button>
+                                <Button type="button" variant="danger" onClick={() => handleRemoveReceivedPayment(p.id)} className="p-2 h-9">
+                                    <ICONS.trash className="h-4 w-4 mr-1"/>
+                                    <span className="text-xs">Excluir</span>
+                                </Button>
                                </div>
                            </div>
                         ))}
@@ -313,7 +377,7 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-2 gap-2 border-t border-slate-700 pt-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-700 pt-4">
                             <Select id="recType" label="Tipo" value={currentReceivedPayment.type} onChange={e => setCurrentReceivedPayment(p => ({...p, type: e.target.value as ReceivedPaymentType}))}>
                                 {RECEIVED_PAYMENT_TYPES.map(c => <option key={c} value={c}>{c}</option>)}
                             </Select>
@@ -338,8 +402,15 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                             <div key={f.id} className="bg-slate-700 p-2 rounded flex items-center justify-between">
                                <span>{f.station} - {f.km}km: {f.liters}L</span>
                                <div className="flex items-center gap-2">
-                                <span className="font-bold">{formatCurrency(f.totalAmount)}</span>
-                                <Button type="button" variant="danger" onClick={() => handleRemoveFueling(f.id)} className="p-1 h-7 w-7"><ICONS.trash className="h-4 w-4"/></Button>
+                                <span className="font-bold mr-2">{formatCurrency(f.totalAmount)}</span>
+                                <Button type="button" variant="secondary" onClick={() => handleEditFueling(f as Fueling)} className="p-2 h-9">
+                                    <ICONS.pencil className="h-4 w-4 mr-1"/>
+                                    <span className="text-xs">Editar</span>
+                                </Button>
+                                <Button type="button" variant="danger" onClick={() => handleRemoveFueling(f.id)} className="p-2 h-9">
+                                    <ICONS.trash className="h-4 w-4 mr-1"/>
+                                    <span className="text-xs">Excluir</span>
+                                </Button>
                                </div>
                            </div>
                         ))}
@@ -351,7 +422,7 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 border-t border-slate-700 pt-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 border-t border-slate-700 pt-4">
                             <AutocompleteInput id="fuelStation" label="Posto" value={currentFueling.station} onChange={e => setCurrentFueling(p => ({...p, station: e.target.value.toUpperCase()}))} suggestions={stationSuggestions}/>
                             <Input id="fuelKm" label="KM" type="number" step="any" value={currentFueling.km || ''} onChange={e => setCurrentFueling(p => ({...p, km: e.target.valueAsNumber || 0}))}/>
                              <Select id="fuelPayment" label="Pagamento" value={currentFueling.paymentMethod} onChange={e => setCurrentFueling(p => ({...p, paymentMethod: e.target.value as PaymentMethod}))}>
@@ -379,8 +450,15 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                             <div key={e.id} className="bg-slate-700 p-2 rounded flex items-center justify-between">
                                <span>{e.category}: {e.description}</span>
                                <div className="flex items-center gap-2">
-                                <span className="font-bold">{formatCurrency(e.amount)}</span>
-                                <Button type="button" variant="danger" onClick={() => handleRemoveExpense(e.id)} className="p-1 h-7 w-7"><ICONS.trash className="h-4 w-4"/></Button>
+                                <span className="font-bold mr-2">{formatCurrency(e.amount)}</span>
+                                <Button type="button" variant="secondary" onClick={() => handleEditExpense(e as Expense)} className="p-2 h-9">
+                                    <ICONS.pencil className="h-4 w-4 mr-1"/>
+                                    <span className="text-xs">Editar</span>
+                                </Button>
+                                <Button type="button" variant="danger" onClick={() => handleRemoveExpense(e.id)} className="p-2 h-9">
+                                    <ICONS.trash className="h-4 w-4 mr-1"/>
+                                    <span className="text-xs">Excluir</span>
+                                </Button>
                                </div>
                            </div>
                         ))}
