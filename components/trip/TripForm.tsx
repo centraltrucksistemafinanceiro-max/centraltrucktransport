@@ -315,7 +315,7 @@ export const TripForm: React.FC<TripFormProps> = ({ setView, trip: existingTrip 
                                 <AutocompleteInput id="cargoType" label="Tipo" value={currentCargo.type} onChange={e => setCurrentCargo(p => ({...p, type: e.target.value.toUpperCase()}))} suggestions={cargoTypeSuggestions} />
                             </div>
                             <div className="sm:col-span-2">
-                                <Input id="cargoWeight" label="Peso (t)" type="number" step="any" value={currentCargo.weight || ''} 
+                                <Input id="cargoWeight" label="Peso Total (t)" type="number" step="any" value={currentCargo.weight || ''} 
                                     onChange={e => {
                                         const val = e.target.valueAsNumber || 0;
                                         setCurrentCargo(p => ({...p, weight: val, pricePerTon: totalCargoValue > 0 && val > 0 ? totalCargoValue / val : p.pricePerTon}));
