@@ -24,15 +24,18 @@
       }
     </style>
     <script>
-      const VERSION = '1.0.' + Date.now();
+      const VERSION = '1.1.' + Date.now();
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(reg => {
+          navigator.serviceWorker.register('/sw.js?v=' + VERSION).then(reg => {
+            // Check for updates every time the page loads
+            reg.update();
+            
             reg.addEventListener('updatefound', () => {
               const newWorker = reg.installing;
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New update available, force reload
+                  console.log('New content available, reloading...');
                   window.location.reload();
                 }
               });
